@@ -32,7 +32,7 @@ shinyUI(fluidPage(
                        h3(textOutput("oneImageName")),
 
                        #output : plot of the requested image
-                       imageOutput(outputId = "magPlot", width = "auto", height = "auto",
+                       plotOutput(outputId = "magPlot",
                                    click = "plot_click") #image Output
 
 
@@ -55,17 +55,17 @@ shinyUI(fluidPage(
                                    choices = list.dirs(pwd, full.names = FALSE),
                                    selected = list.dirs(pwd, full.names = FALSE)[2])
                 ),
-                column(6,
+                column(4,
 
                        # slider for what image to look at
                        numericInput(inputId = "imageNumber",
                                     label = "Select the image number to look at",
-                                    value = 1,
+                                    value = 2,
                                     min = 1,
                                     max = 100) # Max updates to number of images in spec dir
 
                 ),
-                column(2,
+                column(4,
                        actionButton("click", "Click me!", class = "btn-danger"),
                        verbatimTextOutput("plotInfo")
                 )

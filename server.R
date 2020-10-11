@@ -9,18 +9,28 @@
 
 library(shiny)
 library(png)
+library(magick)
+library(stringr)
+
+
 pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
 
     #getting image names for the dir selected
-    imageNames <- reactive({dir(path = paste0(pwd, input$year, "/") ,pattern = ".png")})
-
+    imageNames <- reactive({dir(path = paste0(pwd, input$year, "/") ,pattern = ".tif.png")})
+    imageNameNoType <- reactive({str_split(imageNames()[input$imageNumber],
+                                           pattern = ".p")[[1]][1]})
+    #getting image data for the dir selected
+    imageDatards <- reactive({dir(path = paste0(pwd, input$year, "/") ,
+                                  pattern = paste0(imageNameNoType(), "-Digitized.RDS"))})
     #changes the imageNumber max for numeric input
+
+
     observeEvent(imageNames(), {
         max = length(imageNames())
-        updateNumericInput(session, "imageNumber", max = max, value = 1)
+        updateNumericInput(session, "imageNumber", max = max, value = 2)
     })
 
     # renders the imageNames for printing in ui
@@ -33,14 +43,54 @@ shinyServer(function(input, output, session) {
                "y=", input$plot_click$y)
     })
 
-    output$oneImageName <- renderText({as.character(imageNames()[input$imageNumber])})
+    output$oneImageName <- renderText({as.character(imageNameNoType())})
 
 
-    output$magPlot <- renderImage({
-        return(list(src = paste0(pwd, input$year, "/",
-                                 imageNames()[input$imageNumber]),
-                    contentType = "image/png"))
+    output$magPlot <- renderPlot({
+        # return(list(src = paste0(pwd, input$year, "/",
+        #                          imageNames()[input$imageNumber]),
+        #             contentType = "image/png"))
+
+        #this is working
+        magImage <- image_rotate(image_read(paste0(pwd, input$year, "/",
+                                      imageNames()[input$imageNumber])), 270)
+        magImageDim <- as.numeric(unlist(str_split(image_attributes(magImage)$value[8],
+                                                   pattern = ",")))
+        magImageWidth <- max(magImageDim)
+        #magImageHeight <- min(magImageDim) #just encase the image is non horizontal
+        #cropped <- image_crop(magImage, "390x110+61+175") for digitized bad pixelation
+        if (length(imageDatards()) == 0) {
+            magTrace <- warning("this image doesn't have an RDS file")
+        }
+         else{
+        magTrace <- readRDS(paste0(pwd,
+                                   input$year, "/",
+                                   imageDatards()))
+        par(mar = c(0, 0, 0, 0))
+        plot(magImage)
+
+        #For Top Trace
+        lines(c(rep(0, 0.02*magImageWidth), # main line
+                rep(0, magTrace$TopTraceStartEnds$Start),
+                100 - 8 + magTrace$TopTraceMatrix), lwd = 1.5,col = "red")
+        abline(v = 0.02*magImageWidth + magTrace$TopTraceStartEnds$Start,
+               col = "red", lwd = 3) # start line for top trace
+
+        #For Bottom Trace
+        lines(c(rep(0, 0.02*magImageWidth), # main line
+                rep(0, magTrace$BottomTraceStartEnds$Start),
+                100 - 8 + magTrace$BottomTraceMatrix), lwd = 1.5,col = "red")
+        abline(v = 0.02*magImageWidth + magTrace$BottomTraceStartEnds$Start,
+               col = "red", lwd = 3) # start line for top trace
+        #abline(h = magTrace$Cuts$BottomCut, col = "red")
+        #abline(v = 244+29, col = "green")
+        }
+
+
+
+
+
     },
-    deleteFile = FALSE)
+    )#deleteFile = FALSE)
 
 })
