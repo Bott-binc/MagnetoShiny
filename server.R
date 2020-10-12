@@ -11,6 +11,7 @@ library(shiny)
 library(png)
 library(magick)
 library(stringr)
+library(shinyjs)
 
 
 pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
@@ -38,9 +39,14 @@ shinyServer(function(input, output, session) {
         imageNames()
     })
 
-    output$plotInfo <- renderText({
-        paste0("x=", input$plot_click$x,
-               "y=", input$plot_click$y)
+    output$AdvancedInfo <- renderText({
+        "Please Select where the problem lies"
+    })
+    output$plotInfoX <- renderText({
+        paste0("x = ", input$plot_click$x)
+    })
+    output$plotInfoY <- renderText({
+        paste0("y = ", input$plot_click$y)
     })
 
     output$oneImageName <- renderText({as.character(imageNameNoType())})
@@ -59,8 +65,8 @@ shinyServer(function(input, output, session) {
         magImageWidth <- max(magImageDim)
         #magImageHeight <- min(magImageDim) #just encase the image is non horizontal
         #cropped <- image_crop(magImage, "390x110+61+175") for digitized bad pixelation
-        if (length(imageDatards()) == 0) {
-            magTrace <- warning("this image doesn't have an RDS file")
+        if (length(imageDatards()) == 0) { #there isnt a rds file(not digitized yet)
+            plot(image_read(paste0(pwd, "/", "noRDSErrorMessage.png")))
         }
          else{
         magTrace <- readRDS(paste0(pwd,
@@ -85,12 +91,17 @@ shinyServer(function(input, output, session) {
         #abline(h = magTrace$Cuts$BottomCut, col = "red")
         #abline(v = 244+29, col = "green")
         }
+    }) #deleteFile = FALSE)
 
 
-
-
-
-    },
-    )#deleteFile = FALSE)
+    observeEvent(input$VisFail, {
+        toggle("AdvancedHelpLines")
+        toggle("AdvancedHelpEnvelopes")
+        toggle("AdvancedHelpTopTrace")
+        toggle("AdvancedHelpBottomTrace")
+        toggle("DNP")
+        toggle("VisGood")
+        toggle("AdvancedInfo")
+    })
 
 })
