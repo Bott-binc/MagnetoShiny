@@ -15,20 +15,30 @@ library(shinyjs)
 
 
 pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
+load(paste0(pwd, "todo-200828.RDS"))
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
 
-    #getting image names for the dir selected
-    imageNames <- reactive({dir(path = paste0(pwd, input$year, "/") ,pattern = ".tif.png")})
-    imageNameNoType <- reactive({str_split(imageNames()[input$imageNumber],
-                                           pattern = ".p")[[1]][1]})
-    #getting image data for the dir selected
-    imageDatards <- reactive({dir(path = paste0(pwd, input$year, "/") ,
-                                  pattern = paste0(imageNameNoType(), "-Digitized.RDS"))})
+    # if (isFALSE(input$DigitizationChecking)) {
+        #getting image names for the dir selected
+        imageNames <- reactive({dir(path = paste0(pwd, input$year, "/") ,pattern = ".tif.png")})
+        imageNameNoType <- reactive({str_split(imageNames()[input$imageNumber],
+                                               pattern = ".p")[[1]][1]})
+        #getting image data for the dir selected
+        imageDatards <- reactive({dir(path = paste0(pwd, input$year, "/") ,
+                                      pattern = paste0(imageNameNoType(), "-Digitized.RDS"))})
+
+     # } else{
+     #
+     #    imageNames <- reactive({
+     #        c(dir(path = paste0(pwd, input$year, "/") ,pattern = ".tif.png"),
+     #          dir(path = paste0(pwd, input$year, "/", "
+     #        })
+     #
+     #    }
+
     #changes the imageNumber max for numeric input
-
-
     observeEvent(imageNames(), {
         max = length(imageNames())
         updateNumericInput(session, "imageNumber", max = max, value = 2)
@@ -137,4 +147,9 @@ shinyServer(function(input, output, session) {
         toggle("VisFail")
     })
 
+    observeEvent(input$DigitizationChecking, {
+        toggle("VisGood")
+        toggle("VisFail")
+        toggle("DNP")
+    })
 })

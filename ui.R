@@ -39,6 +39,11 @@ shinyUI(fluidPage(
                        #output of formatted text for the image Name
                        h3(textOutput("oneImageName")),
 
+                       checkboxInput(inputId = "DigitizationChecking",
+                                     label = "Would you like to check digitizations?",
+                                     value = FALSE
+                                    ),
+
                        #output : plot of the requested image
                        plotOutput(outputId = "magPlot",
                                    click = "plot_click") %>% withSpinner(color = "#0dc5c1") #image Output
@@ -46,18 +51,23 @@ shinyUI(fluidPage(
                 )),
             fluidRow(
               column(4,
+                     #hidden(
                      actionButton("VisGood", "Looks Good", class = "btn-success")
-              ),
+                     #)
+                    ),
               column(4,
+                     #hidden(
                      actionButton("VisFail", "Needs Improvement", class = "btn-info"),
-
+                     #)
                      #Cancel button that comes up when the user presses Needs improvement button
                      hidden(
                      actionButton("Cancel", "Cancel", class = "btn-danger")
                      )
               ),
               column(4,
+                     #hidden(
                      actionButton("DNP", "Digitization Not Possible", class = "btn-danger")
+                     #)
               )
             ),
 
@@ -133,13 +143,14 @@ shinyUI(fluidPage(
                 #selecting what plot options that the user wants to see
                 column(6,
                        # sidebarPanel( figure out how to make a good background for this image.
-                         checkboxGroupInput(inputId = "plotChoices",
+                        checkboxGroupInput(inputId = "plotChoices",
                                             label = "Please choose plot overlays",
                                             choices = c("Top Trace Line" = "topTrLine",
                                                         "Bottom Trace Line" = "btmTrLine",
                                                         "Top Trace Start Line" = "startLineTopTr",
                                                         "Bottom Trace Start Line" = "startLineBtmTr"),
                                             selected = c("topTrLine", "btmTrLine"))
+
 
                        #)
                 )
