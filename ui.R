@@ -31,8 +31,10 @@ shinyUI(fluidPage(
 
             fluidRow(
 
-                column(12,
 
+
+
+                column(12,
 
                        #output of formatted text for the image Name
                        h3(textOutput("oneImageName")),
@@ -47,7 +49,12 @@ shinyUI(fluidPage(
                      actionButton("VisGood", "Looks Good", class = "btn-success")
               ),
               column(4,
-                     actionButton("VisFail", "Needs Improvement", class = "btn-info")
+                     actionButton("VisFail", "Needs Improvement", class = "btn-info"),
+
+                     #Cancel button that comes up when the user presses Needs improvement button
+                     hidden(
+                     actionButton("Cancel", "Cancel", class = "btn-danger")
+                     )
               ),
               column(4,
                      actionButton("DNP", "Digitization Not Possible", class = "btn-danger")
@@ -104,32 +111,44 @@ shinyUI(fluidPage(
                 #           label = "Set PWD",
                 #           value = "~/Magnetograms2020/Digitizations/"),
 
-                #selecting the year that will be checked
+                #selecting the year that will be checked & what image to look at
                 column(6,
                        selectInput(inputId = "year",
                                    label = "Select year to be checked",
                                    choices = list.dirs(pwd, full.names = FALSE),
                                    selected = list.dirs(pwd, full.names = FALSE)[2]),
 
-                       verbatimTextOutput("plotInfoX"),
-                       verbatimTextOutput("plotInfoY")
-
-                ),
-                column(6,
-
                        # slider for what image to look at
                        numericInput(inputId = "imageNumber",
                                     label = "Select the image number to look at",
                                     value = 2,
                                     min = 1,
-                                    max = 100) # Max updates to number of images in spec dir
+                                    max = 100), # Max updates to number of images in spec dir
 
+                       verbatimTextOutput("plotInfoX"),
+                       verbatimTextOutput("plotInfoY")
+
+                ),
+
+                #selecting what plot options that the user wants to see
+                column(6,
+                       # sidebarPanel( figure out how to make a good background for this image.
+                         checkboxGroupInput(inputId = "plotChoices",
+                                            label = "Please choose plot overlays",
+                                            choices = c("Top Trace Line" = "topTrLine",
+                                                        "Bottom Trace Line" = "btmTrLine",
+                                                        "Top Trace Start Line" = "startLineTopTr",
+                                                        "Bottom Trace Start Line" = "startLineBtmTr"),
+                                            selected = c("topTrLine", "btmTrLine"))
+
+                       #)
                 )
+
+
+
+
+
             )
-
-
-
-
-        )
+)
 
 )

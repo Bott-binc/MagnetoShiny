@@ -52,6 +52,11 @@ shinyServer(function(input, output, session) {
     output$oneImageName <- renderText({as.character(imageNameNoType())})
 
 
+
+# Plotting the main digitized image with overlays ------------------------------
+
+
+
     output$magPlot <- renderPlot({
         # return(list(src = paste0(pwd, input$year, "/",
         #                          imageNames()[input$imageNumber]),
@@ -75,23 +80,37 @@ shinyServer(function(input, output, session) {
         par(mar = c(0, 0, 0, 0))
         plot(magImage)
 
+
+        #Options for the plotting ---
+
+
+        if ("topTrLine" %in% input$plotChoices) {
         #For Top Trace
         lines(c(rep(0, 0.02*magImageWidth), # main line
                 rep(0, magTrace$TopTraceStartEnds$Start),
                 100 - 8 + magTrace$TopTraceMatrix), lwd = 1.5,col = "red")
+        }
+        if ("startLineTopTr" %in% input$plotChoices) {
         abline(v = 0.02*magImageWidth + magTrace$TopTraceStartEnds$Start,
                col = "red", lwd = 3) # start line for top trace
-
+        }
         #For Bottom Trace
+        if ("btmTrLine" %in% input$plotChoices) {
         lines(c(rep(0, 0.02*magImageWidth), # main line
                 rep(0, magTrace$BottomTraceStartEnds$Start),
                 100 - 8 + magTrace$BottomTraceMatrix), lwd = 1.5,col = "red")
-        abline(v = 0.02*magImageWidth + magTrace$BottomTraceStartEnds$Start,
-               col = "red", lwd = 3) # start line for top trace
-        #abline(h = magTrace$Cuts$BottomCut, col = "red")
-        #abline(v = 244+29, col = "green")
         }
-    }) #deleteFile = FALSE)
+        if ("startLineBtmTr" %in% input$plotChoices) {
+        abline(v = 0.02*magImageWidth + magTrace$BottomTraceStartEnds$Start,
+               col = "red", lwd = 3) # start line for bottom trace
+        #abline(h = magTrace$Cuts$BottomCut, col = "red")
+        }
+        }
+    })
+
+
+
+# Toggling for the buttons when someone presses needs improvement --------------
 
 
     observeEvent(input$VisFail, {
@@ -102,6 +121,20 @@ shinyServer(function(input, output, session) {
         toggle("DNP")
         toggle("VisGood")
         toggle("AdvancedInfo")
+        toggle("Cancel")
+        toggle("VisFail")
+    })
+
+    observeEvent(input$Cancel, {
+        toggle("AdvancedHelpLines")
+        toggle("AdvancedHelpEnvelopes")
+        toggle("AdvancedHelpTopTrace")
+        toggle("AdvancedHelpBottomTrace")
+        toggle("DNP")
+        toggle("VisGood")
+        toggle("AdvancedInfo")
+        toggle("Cancel")
+        toggle("VisFail")
     })
 
 })
