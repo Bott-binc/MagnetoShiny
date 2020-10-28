@@ -1,0 +1,14 @@
+---
+title: "DatabaseTesting"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+PWD <- "~/Documents/Magnetograms2020/Digitizations/logs/" # this is temporary
+logList <- list.files(path = PWD)
+```
+

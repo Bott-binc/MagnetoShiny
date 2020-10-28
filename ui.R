@@ -6,14 +6,26 @@
 #
 #    http://shiny.rstudio.com/
 #
-
+library(png)
 library(shiny)
 library(shinythemes)
 library(shinyjs)
 library(shinycssloaders)
+library(shinylogs)
 #library(bootstraplib) not aval for the new R vsn
 
-pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
+#pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
+pwd <- "~/Documents/Magnetograms2020/Digitizations/" #This is on corsair
+
+
+
+  #when app stop,
+  # navigate to the directory containing the logs
+  onStop(function() {
+    browseURL(url = paste0(pwd, "logs"))
+  })
+
+
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
