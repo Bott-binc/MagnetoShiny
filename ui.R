@@ -14,8 +14,8 @@ library(shinycssloaders)
 library(shinylogs)
 #library(bootstraplib) not aval for the new R vsn
 
-#pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
-pwd <- "~/Documents/Magnetograms2020/Digitizations/" #This is on corsair
+pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
+#pwd <- "~/Documents/Magnetograms2020/Digitizations/" #This is on corsair
 
 
 
@@ -58,7 +58,7 @@ shinyUI(fluidPage(
 
                        #output : plot of the requested image
                        plotOutput(outputId = "magPlot",
-                                   click = "plot_click") %>% withSpinner(color = "#0dc5c1") #image Output
+                                   click = "plot_click") #%>% withSpinner(color = "#0dc5c1") #image Output
 
                 )),
             fluidRow(

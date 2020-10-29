@@ -15,15 +15,15 @@ library(shinyjs)
 library(shinylogs)
 
 
-#pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
-pwd <- "~/Documents/Magnetograms2020/Digitizations/" # this is on the corsair
+pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
+#pwd <- "~/Documents/Magnetograms2020/Digitizations/" # this is on the corsair
 load(paste0(pwd, "todo-200828.RDS"))
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
 
     track_usage(
-        storage_mode = store_rds(path = paste0(pwd, "logs"), )
+        storage_mode = store_rds(path = paste0(pwd, "logs"))
     )
 
     # if (isFALSE(input$DigitizationChecking)) {
