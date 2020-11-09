@@ -74,7 +74,7 @@ shinyUI(fluidPage(
                      #Cancel button that comes up when the user presses Needs improvement button
                      hidden(
                      actionButton("Cancel", "Cancel", class = "btn-danger"),
-                     actionButton("topTrStartOver", "Start Over", class = "btn-danger")
+                     actionButton("traceStartOver", "Start Over", class = "btn-danger")
                      )
               ),
               column(4,

@@ -102,7 +102,7 @@ shinyServer(function(input, output, session) {
 
 
 
-    observeEvent(input$topTrStartOver, {
+    observeEvent(input$traceStartOver, {
         if (input$envelopeSelection == "TTopTrace"){
             pointsTTopEnv$clickx = 0
             pointsTTopEnv$clicky = 0
@@ -179,7 +179,7 @@ shinyServer(function(input, output, session) {
         par(mar = c(0, 0, 0, 0))
         plot(magImage)
         input$AHEnvPlot
-        input$cancelTrace
+        input$traceStartOver
         isolate({
             lines(pointsTTopEnv$clickx, pointsTTopEnv$clicky, col = "green")
             lines(pointsBTopEnv$clickx, pointsBTopEnv$clicky, col = "blue")
@@ -253,7 +253,7 @@ shinyServer(function(input, output, session) {
 
     #when user decides to look at top envelope improvement
     observeEvent(input$AHTopEnv, {
-        toggle("topTrStartOver")
+        toggle("traceStartOver")
         toggle("AHEnvPlot")
         toggle("envelopeSelection")
         toggle("AHTopEnv")
@@ -269,7 +269,7 @@ shinyServer(function(input, output, session) {
 
     # for user to cancel the Tracing of the plot
     observeEvent(input$cancelTrace, {
-        toggle("topTrStartOver")
+        toggle("traceStartOver")
         toggle("AHEnvPlot")
         toggle("envelopeSelection")
         toggle("AHTopEnv")
