@@ -13,11 +13,11 @@ library(magick)
 library(stringr)
 library(shinyjs)
 library(shinylogs)
+plotClickX <- vector()
 
-
-pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
-#pwd <- "~/Documents/Magnetograms2020/Digitizations/" # this is on the corsair
-load(paste0(pwd, "todo-200828.RDS"))
+#pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
+pwd <- "~/Magneto/Digitizations/" # this is on the corsair
+load(paste0(pwd, "todo-200828.rds"))
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
@@ -35,20 +35,14 @@ shinyServer(function(input, output, session) {
         imageDatards <- reactive({dir(path = paste0(pwd, input$year, "/") ,
                                       pattern = paste0(imageNameNoType(), "-Digitized.RDS"))})
 
-     # } else{
-     #
-     #    imageNames <- reactive({
-     #        c(dir(path = paste0(pwd, input$year, "/") ,pattern = ".tif.png"),
-     #          dir(path = paste0(pwd, input$year, "/", "
-     #        })
-     #
-     #    }
+
 
     #changes the imageNumber max for numeric input
     observeEvent(imageNames(), {
         max = length(imageNames())
         updateNumericInput(session, "imageNumber", max = max, value = 2)
     })
+
 
     # renders the imageNames for printing in ui
     output$ImageNames <- renderPrint({
@@ -58,12 +52,33 @@ shinyServer(function(input, output, session) {
     output$AdvancedInfo <- renderText({
         "Please Select where the problem lies"
     })
-    output$plotInfoX <- renderText({
-        paste0("x = ", input$plot_click$x)
+
+    output$TraceInfo <- renderText({
+        "Please click on the plot and create envelope line"
     })
-    output$plotInfoY <- renderText({
-        paste0("y = ", input$plot_click$y)
+
+    # for the points vector
+    observeEvent(input$topTrStartOver, {
+       pointsTopEnv$clickx = 0
+       pointsTopEnv$clicky = 0
     })
+
+        pointsTopEnv <- reactiveValues(clickx = 0, clicky = 0)
+
+
+        observe({
+            input$plot_click
+            isolate({ # lets the points to not be re-evaluated
+                pointsTopEnv$clickx = c(pointsTopEnv$clickx, round(as.numeric(input$plot_click$x), digits = 3))
+                pointsTopEnv$clicky = c(pointsTopEnv$clicky, round(as.numeric(input$plot_click$y), digits = 3))
+            })
+        })
+
+
+    output$plotInfoTopEnv <- renderText({
+        paste0("x = ", pointsTopEnv$clickx, ", y = ", pointsTopEnv$clicky, "\n")
+    })
+
 
     output$oneImageName <- renderText({as.character(imageNameNoType())})
 
@@ -95,7 +110,11 @@ shinyServer(function(input, output, session) {
                                    imageDatards()))
         par(mar = c(0, 0, 0, 0))
         plot(magImage)
-
+        input$AHTopEnvPlot
+        input$topTrStartOver
+        isolate({
+            lines(pointsTopEnv$clickx, pointsTopEnv$clicky)
+        })
 
         #Options for the plotting ---
 
@@ -128,12 +147,12 @@ shinyServer(function(input, output, session) {
 
 # Toggling for the buttons when someone presses needs improvement --------------
 
-
+    #needs improvent toggle
     observeEvent(input$VisFail, {
         toggle("AdvancedHelpLines")
         toggle("AdvancedHelpEnvelopes")
-        toggle("AdvancedHelpTopTrace")
-        toggle("AdvancedHelpBottomTrace")
+        toggle("AHTopEnv")
+        toggle("AHBottomEnv")
         toggle("DNP")
         toggle("VisGood")
         toggle("AdvancedInfo")
@@ -141,11 +160,12 @@ shinyServer(function(input, output, session) {
         toggle("VisFail")
     })
 
+    #when user presses cancel
     observeEvent(input$Cancel, {
         toggle("AdvancedHelpLines")
         toggle("AdvancedHelpEnvelopes")
-        toggle("AdvancedHelpTopTrace")
-        toggle("AdvancedHelpBottomTrace")
+        toggle("AHTopEnv")
+        toggle("AHBottomEnv")
         toggle("DNP")
         toggle("VisGood")
         toggle("AdvancedInfo")
@@ -153,9 +173,42 @@ shinyServer(function(input, output, session) {
         toggle("VisFail")
     })
 
+    #when user decides to do digitization checking
     observeEvent(input$DigitizationChecking, {
         toggle("VisGood")
         toggle("VisFail")
         toggle("DNP")
     })
+
+    #when user decides to look at top envelope improvement
+    observeEvent(input$AHTopEnv, {
+        toggle("topTrStartOver")
+        toggle("AHTopEnvPlot")
+        toggle("envelopeSelection")
+        toggle("AHTopEnv")
+        toggle("Cancel")
+        toggle("cancelTrace")
+        toggle("AdvancedHelpLines")
+        toggle("AdvancedHelpEnvelopes")
+        toggle("AHBottomEnv")
+        toggle("AdvancedInfo")
+        toggle("TraceInfo")
+
+    })
+
+    # for user to cancel the Tracing of the plot
+    observeEvent(input$cancelTrace, {
+        toggle("topTrStartOver")
+        toggle("AHTopEnvPlot")
+        toggle("envelopeSelection")
+        toggle("AHTopEnv")
+        toggle("Cancel")
+        toggle("cancelTrace")
+        toggle("AdvancedHelpLines")
+        toggle("AdvancedHelpEnvelopes")
+        toggle("AHBottomEnv")
+        toggle("AdvancedInfo")
+        toggle("TraceInfo")
+    })
+
 })
