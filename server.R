@@ -58,26 +58,94 @@ shinyServer(function(input, output, session) {
     })
 
     # for the points vector
-    observeEvent(input$topTrStartOver, {
-       pointsTopEnv$clickx = 0
-       pointsTopEnv$clicky = 0
-    })
 
-        pointsTopEnv <- reactiveValues(clickx = 0, clicky = 0)
+    pointsTTopEnv <- reactiveValues(clickx = 0, clicky = 0)
+    pointsBTopEnv <- reactiveValues(clickx = 0, clicky = 0)
+    pointsTBottomEnv <- reactiveValues(clickx = 0, clicky = 0)
+    pointsBBottomEnv <- reactiveValues(clickx = 0, clicky = 0)
 
+    observeEvent(input$plot_click, {
 
-        observe({
-            input$plot_click
+        if (input$envelopeSelection == "TTopTrace"){
             isolate({ # lets the points to not be re-evaluated
-                pointsTopEnv$clickx = c(pointsTopEnv$clickx, round(as.numeric(input$plot_click$x), digits = 3))
-                pointsTopEnv$clicky = c(pointsTopEnv$clicky, round(as.numeric(input$plot_click$y), digits = 3))
+                pointsTTopEnv$clickx = c(pointsTTopEnv$clickx,
+                                         round(as.numeric(input$plot_click$x), digits = 3))
+                pointsTTopEnv$clicky = c(pointsTTopEnv$clicky,
+                                         round(as.numeric(input$plot_click$y), digits = 3))
             })
-        })
-
-
-    output$plotInfoTopEnv <- renderText({
-        paste0("x = ", pointsTopEnv$clickx, ", y = ", pointsTopEnv$clicky, "\n")
+        }
+        if (input$envelopeSelection == "BTopTrace"){
+            isolate({ # lets the points to not be re-evaluated
+                pointsBTopEnv$clickx = c(pointsBTopEnv$clickx,
+                                         round(as.numeric(input$plot_click$x), digits = 3))
+                pointsBTopEnv$clicky = c(pointsBTopEnv$clicky,
+                                         round(as.numeric(input$plot_click$y), digits = 3))
+            })
+        }
+        if (input$envelopeSelection == "TBottomTrace"){
+            isolate({ # lets the points to not be re-evaluated
+                pointsTBottomEnv$clickx = c(pointsTBottomEnv$clickx,
+                                            round(as.numeric(input$plot_click$x), digits = 3))
+                pointsTBottomEnv$clicky = c(pointsTBottomEnv$clicky,
+                                            round(as.numeric(input$plot_click$y), digits = 3))
+            })
+        }
+        if (input$envelopeSelection == "BBottomTrace"){
+            isolate({ # lets the points to not be re-evaluated
+                pointsBBottomEnv$clickx = c(pointsBBottomEnv$clickx,
+                                            round(as.numeric(input$plot_click$x), digits = 3))
+                pointsBBottomEnv$clicky = c(pointsBBottomEnv$clicky,
+                                            round(as.numeric(input$plot_click$y), digits = 3))
+            })
+        }
     })
+
+
+
+    observeEvent(input$topTrStartOver, {
+        if (input$envelopeSelection == "TTopTrace"){
+            pointsTTopEnv$clickx = 0
+            pointsTTopEnv$clicky = 0
+        }
+        if (input$envelopeSelection == "BTopTrace"){
+            pointsBTopEnv$clickx = 0
+            pointsBTopEnv$clicky = 0
+        }
+        if (input$envelopeSelection == "TBottomTrace"){
+            pointsTBottomEnv$clickx = 0
+            pointsTBottomEnv$clicky = 0
+        }
+        if (input$envelopeSelection == "BBottomTrace"){
+            pointsBBottomEnv$clickx = 0
+            pointsBBottomEnv$clicky = 0
+        }
+    })
+
+
+
+    # observe({
+    #     input$plot_click
+    #     isolate({ # lets the points to not be re-evaluated
+    #         pointsBTopEnv$clickx = c(pointsBTopEnv$clickx, round(as.numeric(input$plot_click$x), digits = 3))
+    #         pointsBTopEnv$clicky = c(pointsBTopEnv$clicky, round(as.numeric(input$plot_click$y), digits = 3))
+    #     })
+    # })
+    #
+    output$plotInfoTTopEnv <- renderText({
+        paste0("x = ", pointsTTopEnv$clickx, ", y = ", pointsTTopEnv$clicky, "\n")
+    })
+    output$plotInfoBTopEnv <- renderText({
+        paste0("x = ", pointsBTopEnv$clickx, ", y = ", pointsBTopEnv$clicky, "\n")
+    })
+    output$plotInfoTBottomEnv <- renderText({
+        paste0("x = ", pointsTBottomEnv$clickx, ", y = ", pointsTBottomEnv$clicky, "\n")
+    })
+    output$plotInfoBBottomEnv <- renderText({
+        paste0("x = ", pointsBBottomEnv$clickx, ", y = ", pointsBBottomEnv$clicky, "\n")
+    })
+
+
+
 
 
     output$oneImageName <- renderText({as.character(imageNameNoType())})
@@ -110,10 +178,13 @@ shinyServer(function(input, output, session) {
                                    imageDatards()))
         par(mar = c(0, 0, 0, 0))
         plot(magImage)
-        input$AHTopEnvPlot
-        input$topTrStartOver
+        input$AHEnvPlot
+        input$cancelTrace
         isolate({
-            lines(pointsTopEnv$clickx, pointsTopEnv$clicky)
+            lines(pointsTTopEnv$clickx, pointsTTopEnv$clicky, col = "green")
+            lines(pointsBTopEnv$clickx, pointsBTopEnv$clicky, col = "blue")
+            lines(pointsTBottomEnv$clickx, pointsTBottomEnv$clicky, col = "red")
+            lines(pointsBBottomEnv$clickx, pointsBBottomEnv$clicky, col ="yellow")
         })
 
         #Options for the plotting ---
@@ -183,7 +254,7 @@ shinyServer(function(input, output, session) {
     #when user decides to look at top envelope improvement
     observeEvent(input$AHTopEnv, {
         toggle("topTrStartOver")
-        toggle("AHTopEnvPlot")
+        toggle("AHEnvPlot")
         toggle("envelopeSelection")
         toggle("AHTopEnv")
         toggle("Cancel")
@@ -199,7 +270,7 @@ shinyServer(function(input, output, session) {
     # for user to cancel the Tracing of the plot
     observeEvent(input$cancelTrace, {
         toggle("topTrStartOver")
-        toggle("AHTopEnvPlot")
+        toggle("AHEnvPlot")
         toggle("envelopeSelection")
         toggle("AHTopEnv")
         toggle("Cancel")

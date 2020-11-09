@@ -119,7 +119,7 @@ shinyUI(fluidPage(
                      hidden(
                        actionButton("AHTopEnv", "Trace Top Envelopes", class = "btn-info"),
                        actionButton("cancelTrace", "Cancel tracing", class = "btn-danger"),
-                       actionButton("AHTopEnvPlot", "Plot to check trace", class = "btn-info")
+                       actionButton("AHEnvPlot", "Plot to check trace", class = "btn-info")
                      )
               ),
               column(3,
@@ -157,8 +157,8 @@ shinyUI(fluidPage(
                                     max = 100), # Max updates to number of images in spec dir
 
                        # tableOutput("plotInfoX"),
-                       verbatimTextOutput("plotInfoTopEnv"),
-                       verbatimTextOutput("plotInfoBottomEnv")
+                       verbatimTextOutput("plotInfoTTopEnv"),
+                       verbatimTextOutput("plotInfoBTopEnv")
 
                 ),
 
