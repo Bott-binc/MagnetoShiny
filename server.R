@@ -13,6 +13,7 @@ library(magick)
 library(stringr)
 library(shinyjs)
 library(shinylogs)
+library(readr)
 plotClickX <- vector()
 
 #pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
@@ -22,9 +23,9 @@ load(paste0(pwd, "todo-200828.rds"))
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
 
-    track_usage(
-        storage_mode = store_rds(path = paste0(pwd, "logs"))
-    )
+    # track_usage(
+    #     storage_mode = store_rds(path = paste0(pwd, "logs"))
+    # )
 
     # if (isFALSE(input$DigitizationChecking)) {
         #getting image names for the dir selected
@@ -57,7 +58,7 @@ shinyServer(function(input, output, session) {
         "Please click on the plot and create envelope line"
     })
 
-    # for the points vector
+    # for the points/envelopes vector ------------------------------------------
 
     pointsTTopEnv <- reactiveValues(clickx = 0, clicky = 0)
     pointsBTopEnv <- reactiveValues(clickx = 0, clicky = 0)
@@ -101,6 +102,7 @@ shinyServer(function(input, output, session) {
     })
 
 
+# Resetting points if user pushes re-trace button ------------------------------
 
     observeEvent(input$traceStartOver, {
         if (input$envelopeSelection == "TTopTrace"){
@@ -122,15 +124,8 @@ shinyServer(function(input, output, session) {
     })
 
 
+# Temporary for the user to see the points vectors -----------------------------
 
-    # observe({
-    #     input$plot_click
-    #     isolate({ # lets the points to not be re-evaluated
-    #         pointsBTopEnv$clickx = c(pointsBTopEnv$clickx, round(as.numeric(input$plot_click$x), digits = 3))
-    #         pointsBTopEnv$clicky = c(pointsBTopEnv$clicky, round(as.numeric(input$plot_click$y), digits = 3))
-    #     })
-    # })
-    #
     output$plotInfoTTopEnv <- renderText({
         paste0("x = ", pointsTTopEnv$clickx, ", y = ", pointsTTopEnv$clicky, "\n")
     })
@@ -144,9 +139,25 @@ shinyServer(function(input, output, session) {
         paste0("x = ", pointsBBottomEnv$clickx, ", y = ", pointsBBottomEnv$clicky, "\n")
     })
 
+    envelopeData <- reactive({
+        data.frame(pointsTTopEnv)
+    })
 
+# Writing csv for testing of the envelopes -------------------------------------
+    observeEvent(
+        input$write_csv, {                             # when button is clicked <---
 
+            now <- Sys.time() %>%                      # clean up <-----------------
+            str_replace_all("\\:", "-") %>%            # text for <-----------------
+            str_replace(" ", "_")                      # Sys.time <-----------------
 
+            filename <- paste0(as.character(imageNameNoType()),"Envelopes_{now}.csv")  # create filename <----------
+            write_csv(envelopeData(), file = paste0(pwd, filename))  # write to csv <-------------
+
+        }
+    )
+
+    # renders image name for the plot title ------------------------------------
 
     output$oneImageName <- renderText({as.character(imageNameNoType())})
 
@@ -173,45 +184,49 @@ shinyServer(function(input, output, session) {
             plot(image_read(paste0(pwd, "/", "noRDSErrorMessage.png")))
         }
          else{
-        magTrace <- readRDS(paste0(pwd,
-                                   input$year, "/",
-                                   imageDatards()))
-        par(mar = c(0, 0, 0, 0))
-        plot(magImage)
-        input$AHEnvPlot
-        input$traceStartOver
-        isolate({
-            lines(pointsTTopEnv$clickx, pointsTTopEnv$clicky, col = "green")
-            lines(pointsBTopEnv$clickx, pointsBTopEnv$clicky, col = "blue")
-            lines(pointsTBottomEnv$clickx, pointsTBottomEnv$clicky, col = "red")
-            lines(pointsBBottomEnv$clickx, pointsBBottomEnv$clicky, col ="yellow")
-        })
+                 magTrace <- readRDS(paste0(pwd,
+                                            input$year, "/",
+                                            imageDatards()))
+                 par(mar = c(0, 0, 0, 0))
+                 plot(magImage)
+                 input$AHEnvPlot
+                 input$traceStartOver
 
-        #Options for the plotting ---
+                 isolate({
+                     lines(pointsTTopEnv$clickx, pointsTTopEnv$clicky, col = "green")
+                     lines(pointsBTopEnv$clickx, pointsBTopEnv$clicky, col = "blue")
+                     lines(pointsTBottomEnv$clickx, pointsTBottomEnv$clicky, col = "red")
+                     lines(pointsBBottomEnv$clickx, pointsBBottomEnv$clicky, col ="yellow")
+                 })
 
 
-        if ("topTrLine" %in% input$plotChoices) {
-        #For Top Trace
-        lines(c(rep(0, 0.02*magImageWidth), # main line
-                rep(0, magTrace$TopTraceStartEnds$Start),
-                100 - 8 + magTrace$TopTraceMatrix), lwd = 1.5,col = "red")
-        }
-        if ("startLineTopTr" %in% input$plotChoices) {
-        abline(v = 0.02*magImageWidth + magTrace$TopTraceStartEnds$Start,
-               col = "red", lwd = 3) # start line for top trace
-        }
-        #For Bottom Trace
-        if ("btmTrLine" %in% input$plotChoices) {
-        lines(c(rep(0, 0.02*magImageWidth), # main line
-                rep(0, magTrace$BottomTraceStartEnds$Start),
-                100 - 8 + magTrace$BottomTraceMatrix), lwd = 1.5,col = "red")
-        }
-        if ("startLineBtmTr" %in% input$plotChoices) {
-        abline(v = 0.02*magImageWidth + magTrace$BottomTraceStartEnds$Start,
-               col = "red", lwd = 3) # start line for bottom trace
-        #abline(h = magTrace$Cuts$BottomCut, col = "red")
-        }
-        }
+                 #Options for the plotting ---
+
+
+                 if ("topTrLine" %in% input$plotChoices) {
+                     #For Top Trace
+                     lines(c(rep(0, 0.02*magImageWidth), # main line
+                             rep(0, magTrace$TopTraceStartEnds$Start),
+                             100 - 8 + magTrace$TopTraceMatrix), lwd = 1.5,col = "red")
+                 }
+                 if ("startLineTopTr" %in% input$plotChoices) {
+                     abline(v = 0.02*magImageWidth + magTrace$TopTraceStartEnds$Start,
+                            col = "red", lwd = 3) # start line for top trace
+                 }
+                 #For Bottom Trace
+                 if ("btmTrLine" %in% input$plotChoices) {
+                     lines(c(rep(0, 0.02*magImageWidth), # main line
+                             rep(0, magTrace$BottomTraceStartEnds$Start),
+                             100 - 8 + magTrace$BottomTraceMatrix), lwd = 1.5,col = "red")
+                 }
+                 if ("startLineBtmTr" %in% input$plotChoices) {
+                     abline(v = 0.02*magImageWidth + magTrace$BottomTraceStartEnds$Start,
+                            col = "red", lwd = 3) # start line for bottom trace
+                     #abline(h = magTrace$Cuts$BottomCut, col = "red")
+                 }
+
+
+         }
     })
 
 

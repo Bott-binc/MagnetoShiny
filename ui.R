@@ -12,6 +12,7 @@ library(shinythemes)
 library(shinyjs)
 library(shinycssloaders)
 library(shinylogs)
+library(readr)
 #library(bootstraplib) not aval for the new R vsn
 
 #pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
@@ -74,7 +75,7 @@ shinyUI(fluidPage(
                      #Cancel button that comes up when the user presses Needs improvement button
                      hidden(
                      actionButton("Cancel", "Cancel", class = "btn-danger"),
-                     actionButton("traceStartOver", "Start Over", class = "btn-danger")
+                     actionButton("traceStartOver", "Re-Trace Line", class = "btn-danger")
                      )
               ),
               column(4,
@@ -117,9 +118,9 @@ shinyUI(fluidPage(
               ),
               column(3,
                      hidden(
-                       actionButton("AHTopEnv", "Trace Top Envelopes", class = "btn-info"),
-                       actionButton("cancelTrace", "Cancel tracing", class = "btn-danger"),
-                       actionButton("AHEnvPlot", "Plot to check trace", class = "btn-info")
+                       actionButton("AHTopEnv", "Manually Redo Envelopes", class = "btn-info"),
+                       actionButton("cancelTrace", "Cancel Tracing", class = "btn-danger"),
+                       actionButton("AHEnvPlot", "Plot to Check Trace", class = "btn-info")
                      )
               ),
               column(3,
@@ -171,7 +172,8 @@ shinyUI(fluidPage(
                                                         "Bottom Trace Line" = "btmTrLine",
                                                         "Top Trace Start Line" = "startLineTopTr",
                                                         "Bottom Trace Start Line" = "startLineBtmTr"),
-                                            selected = c("topTrLine", "btmTrLine"))
+                                            selected = c("topTrLine", "btmTrLine")),
+                       actionButton("write_csv", "never press this button", class = "btn-info")
 
 
                        #)

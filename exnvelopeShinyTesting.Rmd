@@ -1,0 +1,45 @@
+---
+title: "Envelope_Shiny_Testing.Rmd"
+output: pdf_document
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+x <- c(1, 5, 7, 8)
+y <- c(1, 2, 3, 2)
+```
+
+```{r}
+envelopegapfiller <- function(x, y, nCol) {
+  if (x[1] != 0) { # ensure that we are at the correct starting height
+    x <- c(0,x) # creates first point 
+    y <- c(y[1],y) # matches height of user selected first point
+  }
+  diffx <- diff(x)
+  diffy <- diff(y)
+  #slopes <- diffy / diffx # slope of the y = mx+b line between each points
+  # intercept <- y - (slopes * x)
+  xNumFills <- diffx - 1 # how many places we have to fill
+  
+  newX <- vector()
+  for (i in 1:(length(x) - 1)) {
+    if (xNumFills[i] != 0){
+      newX <- append(newX, x[i])
+      newX <- append(newX, rep(NA, times = xNumFills[i]))
+      }
+    else {
+      newX <- append(newX, x[i])
+    }
+    
+  }
+  newX <- append(newX, x[length(x)])
+  
+  
+
+  }
+```
