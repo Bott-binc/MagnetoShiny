@@ -16,8 +16,8 @@ library(shinylogs)
 library(readr)
 plotClickX <- vector()
 
-#pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
-pwd <- "~/Magneto/Digitizations/" # this is on the corsair
+pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
+#pwd <- "~/Magneto/Digitizations/" # this is on the corsair
 load(paste0(pwd, "todo-200828.rds"))
 
 # Define server logic required to draw a histogram
@@ -139,17 +139,27 @@ shinyServer(function(input, output, session) {
         paste0("x = ", pointsBBottomEnv$clickx, ", y = ", pointsBBottomEnv$clicky, "\n")
     })
 
-    envelopeData <- reactive({
-        data.frame(pointsTTopEnv)
+    envelopeDataTTop <- reactive({
+        data.frame(x = pointsTTopEnv$clickx - 120, y = pointsTTopEnv$clicky)
     })
+    envelopeDataBTop <- reactive({
+        data.frame(x = pointsBTopEnv$clickx - 120, y = pointsBTopEnv$clicky)
+    })
+    envelopeDataTBottom <- reactive({
+        data.frame(x = pointsTBottomEnv$clickx - 120, y = pointsTBottomEnv$clicky)
+    })
+    envelopeDataBBottom <- reactive({
+        data.frame(x = pointsBBottomEnv$clickx - 120, y = pointsBBottomEnv$clicky)
+    })
+
 
 # Writing csv for testing of the envelopes -------------------------------------
     observeEvent(
-        input$write_csv, {                             # when button is clicked <---
-
-            now <- Sys.time() %>%                      # clean up <-----------------
-            str_replace_all("\\:", "-") %>%            # text for <-----------------
-            str_replace(" ", "_")                      # Sys.time <-----------------
+        input$reRun, {                             # when button is clicked <---
+            #need to put TISI here now
+            # now <- Sys.time() %>%                      # clean up <-----------------
+            # str_replace_all("\\:", "-") %>%            # text for <-----------------
+            # str_replace(" ", "_")                      # Sys.time <-----------------
 
             filename <- paste0(as.character(imageNameNoType()),"Envelopes_{now}.csv")  # create filename <----------
             write_csv(envelopeData(), file = paste0(pwd, filename))  # write to csv <-------------
@@ -188,7 +198,7 @@ shinyServer(function(input, output, session) {
                                             input$year, "/",
                                             imageDatards()))
                  par(mar = c(0, 0, 0, 0))
-                 plot(magImage)
+                 plot(magImage, xlim = c(120, magImageWidth))
                  input$AHEnvPlot
                  input$traceStartOver
 
@@ -196,7 +206,7 @@ shinyServer(function(input, output, session) {
                      lines(pointsTTopEnv$clickx, pointsTTopEnv$clicky, col = "green")
                      lines(pointsBTopEnv$clickx, pointsBTopEnv$clicky, col = "blue")
                      lines(pointsTBottomEnv$clickx, pointsTBottomEnv$clicky, col = "red")
-                     lines(pointsBBottomEnv$clickx, pointsBBottomEnv$clicky, col ="yellow")
+                     lines(pointsBBottomEnv$clickx, pointsBBottomEnv$clicky, col = "yellow")
                  })
 
 

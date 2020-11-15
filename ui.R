@@ -12,11 +12,10 @@ library(shinythemes)
 library(shinyjs)
 library(shinycssloaders)
 library(shinylogs)
-library(readr)
 #library(bootstraplib) not aval for the new R vsn
 
-#pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
-pwd <- "~/Magneto/Digitizations/" #This is on corsair
+pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
+#pwd <- "~/Magneto/Digitizations/" #This is on corsair
 
 
 
@@ -173,7 +172,7 @@ shinyUI(fluidPage(
                                                         "Top Trace Start Line" = "startLineTopTr",
                                                         "Bottom Trace Start Line" = "startLineBtmTr"),
                                             selected = c("topTrLine", "btmTrLine")),
-                       actionButton("write_csv", "never press this button", class = "btn-info")
+                       actionButton("reRun", "never press this button", class = "btn-info")
 
 
                        #)
