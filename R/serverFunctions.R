@@ -1,33 +1,9 @@
----
-title: "Envelope_Shiny_Testing.Rmd"
-output: pdf_document
----
+library(tools)
 
 
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-```{r}
-x <- c(1, 5, 7, 8)
-y <- c(1, 2, 3, 2)
-```
-
-```{r}
-#' Title
-#'
-#' @param x vector of points
-#' @param y vector of points
-#' @param nCol the number of columns (out length of the vector) remember that 0 is a column
-#'
-#' @return
-#' @export
-#'
-#' @examples
 envelopegapfiller <- function(x, y, nCol = NULL) {
   if (x[1] != 0) { # ensure that we are at the correct starting height
-    x <- c(0,x) # creates first point 
+    x <- c(0,x) # creates first point
     y <- c(y[1],y) # matches height of user selected first point
   }
   diffx <- diff(x)
@@ -35,7 +11,7 @@ envelopegapfiller <- function(x, y, nCol = NULL) {
   slopes <- diffy / diffx # slope of the y = mx+b line between each points
 
   xNumFills <- diff(x) - 1 # how many places we have to fill
-  
+
   # Extending the points to make continuous ------------------------------------
   newX <- vector()
   newY <- vector()
@@ -45,25 +21,25 @@ envelopegapfiller <- function(x, y, nCol = NULL) {
       newY <- append(newY, y[i])
       newX <- append(newX, rep(NA, times = xNumFills[i]))
       newY <- append(newY, rep(NA, times = xNumFills[i]))
-      }
+    }
     else {
       newX <- append(newX, x[i])
       newY <- append(newY, y[i])
     }
-    
+
   }
   newX <- append(newX, x[length(x)])
   newY <- append(newY, y[length(x)])
-  
+
   #adding the numbers in the correct place for the X values --------------------
   for (i in 1:length(newX)) {
     if (is.na(newX[i])) {
       newX[i] = newX[i - 1] + 1
     }
   }
-  
+
   #Matching the length of the nCol specified -----------------------------------
-  
+
   if (!is.null(nCol)) {
     if (newX[length(newX)] > nCol) {
       outX <- newX[1:nCol] # just removes any data outside of the end length
@@ -79,18 +55,14 @@ envelopegapfiller <- function(x, y, nCol = NULL) {
     outX <- newX
     outY <- newY
   }
-  
+
   # Start of adding the heights from the slope ---------------------------------
   k <- 0
   indicator = FALSE
   for (i in 1:(length(outY) - sum(xNumFills))) {
-    
     if (i == length(xNumFills)) {
       k <- k + 1
-      #print(c("endWithFilling", slopes[length(xNumFills)]))
-      #print(outY[k])
       intersept <- outY[k] - (outX[k]*slopes[length(xNumFills)])
-      #print(intersept)
       next
     }
     else if (i > length(xNumFills)) {
@@ -100,56 +72,28 @@ envelopegapfiller <- function(x, y, nCol = NULL) {
           intersept
         indicator <- TRUE
       }else{
-        
-        #print(c("testEnd", slopes[length(xNumFills)]))
-        #print(outY[k])
         outY[k] <- outY[k - 1]
-        #print(intersept)
       }
     }
     else if (xNumFills[i] == 0) {
       k <- k + 1
-      #print(c("noneElseIf", slopes[i]))
-      #print(c("none", slopes[i]))
-       #print(outY[k])
-       intersept <- outY[k] - (outX[k] * slopes[i])
-       #print(intersept)
+      intersept <- outY[k] - (outX[k] * slopes[i])
       next
     }
     else{
       for (j in 1:(xNumFills[i] + 1 )) {
-         k <- k + 1
+        k <- k + 1
         if (j == 1) {
-         # print(c("noneForFilling", slopes[i])) 
-          # print(outY[k])
-           intersept <- outY[k] - (outX[k] * slopes[i])
-          # print(intersept)
+          intersept <- outY[k] - (outX[k] * slopes[i])
         }
         else {
-        #print(paste0("test", slopes[i],j - 1))
-         #  print(outY[k])
-           outY[k] <- outX[k]*slopes[i] + intersept
-         #  print(intersept)
+          outY[k] <- outX[k]*slopes[i] + intersept
         }
       }
-      # j <- 1
-      #   if (xNumFills[i] == 0) {
-      #     next
-      #     j <- j + 1
-      #   }
     }
   }
-  
-  
+
+
   return(data.frame(x = outX, y = outY))
 
-  }
-```
-
-
-```{r}
-par(mfrow = c(1,2))
-plot(x, y)
-plot(test$x, test$y)
-```
-
+}
