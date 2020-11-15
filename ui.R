@@ -12,18 +12,19 @@ library(shinythemes)
 library(shinyjs)
 library(shinycssloaders)
 library(shinylogs)
+library(readr)
 #library(bootstraplib) not aval for the new R vsn
 
-pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
-#pwd <- "~/Documents/Magnetograms2020/Digitizations/" #This is on corsair
+#pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
+pwd <- "~/Magneto/Digitizations/" #This is on corsair
 
 
 
   #when app stop,
   # navigate to the directory containing the logs
-  onStop(function() {
-    browseURL(url = paste0(pwd, "logs"))
-  })
+  # onStop(function() {
+  #   browseURL(url = paste0(pwd, "logs"))
+  # })
 
 
 
@@ -73,7 +74,8 @@ shinyUI(fluidPage(
                      #)
                      #Cancel button that comes up when the user presses Needs improvement button
                      hidden(
-                     actionButton("Cancel", "Cancel", class = "btn-danger")
+                     actionButton("Cancel", "Cancel", class = "btn-danger"),
+                     actionButton("traceStartOver", "Re-Trace Line", class = "btn-danger")
                      )
               ),
               column(4,
@@ -89,7 +91,8 @@ shinyUI(fluidPage(
               column(3),
               column(6,
               hidden(
-                verbatimTextOutput("AdvancedInfo")
+                verbatimTextOutput("AdvancedInfo"),
+                verbatimTextOutput("TraceInfo")
                 )
               ),
               column(3)
@@ -105,17 +108,24 @@ shinyUI(fluidPage(
               ),
               column(3,
                      hidden(
-                       actionButton("AdvancedHelpEnvelopes", "Envelopes incorrect", class = "btn-info")
+                       actionButton("AdvancedHelpEnvelopes", "Envelopes incorrect", class = "btn-info"),
+                       radioButtons(inputId="envelopeSelection", label="What Envelope do you want to trace?",
+                                    choices=c( "Top of Top Trace" = "TTopTrace" ,
+                                              "Bottom of Top Trace" = "BTopTrace",
+                                              "Top of Bottom Trace" = "TBottomTrace",
+                                              "Bottom of Bottom Trace" = "BBottomTrace"))
                      )
               ),
               column(3,
                      hidden(
-                       actionButton("AdvancedHelpTopTrace", "Top trace line veered", class = "btn-info")
+                       actionButton("AHTopEnv", "Manually Redo Envelopes", class = "btn-info"),
+                       actionButton("cancelTrace", "Cancel Tracing", class = "btn-danger"),
+                       actionButton("AHEnvPlot", "Plot to Check Trace", class = "btn-info")
                      )
               ),
               column(3,
                      hidden(
-                       actionButton("AdvancedHelpBottomTrace", "Bottom trace line veered", class = "btn-info")
+                       actionButton("AHBottomEnv", "Trace Bottom Envelopes", class = "btn-info")
                      )
               )
 
@@ -147,8 +157,9 @@ shinyUI(fluidPage(
                                     min = 1,
                                     max = 100), # Max updates to number of images in spec dir
 
-                       verbatimTextOutput("plotInfoX"),
-                       verbatimTextOutput("plotInfoY")
+                       # tableOutput("plotInfoX"),
+                       verbatimTextOutput("plotInfoTTopEnv"),
+                       verbatimTextOutput("plotInfoBTopEnv")
 
                 ),
 
@@ -161,7 +172,8 @@ shinyUI(fluidPage(
                                                         "Bottom Trace Line" = "btmTrLine",
                                                         "Top Trace Start Line" = "startLineTopTr",
                                                         "Bottom Trace Start Line" = "startLineBtmTr"),
-                                            selected = c("topTrLine", "btmTrLine"))
+                                            selected = c("topTrLine", "btmTrLine")),
+                       actionButton("write_csv", "never press this button", class = "btn-info")
 
 
                        #)
