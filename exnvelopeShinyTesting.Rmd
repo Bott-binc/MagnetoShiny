@@ -19,17 +19,16 @@ y <- c(1, 2, 3, 2)
 #'
 #' @param x vector of points
 #' @param y vector of points
-#' @param nCol the number of columns (out length of the vector)
-#' @param addedToStartHeight Added to the starting height, acts as a buffer if needed for first point, defaults to the height of the first point + 0 if not specified
+#' @param nCol the number of columns (out length of the vector) remember that 0 is a column
 #'
 #' @return
 #' @export
 #'
 #' @examples
-envelopegapfiller <- function(x, y, nCol = NULL, addedToStartHeight = 0) {
+envelopegapfiller <- function(x, y, nCol = NULL) {
   if (x[1] != 0) { # ensure that we are at the correct starting height
     x <- c(0,x) # creates first point 
-    y <- c((y[1] + addedToStartHeight),y) # matches height of user selected first point
+    y <- c(y[1],y) # matches height of user selected first point
   }
   diffx <- diff(x)
   diffy <- diff(y)
@@ -41,7 +40,7 @@ envelopegapfiller <- function(x, y, nCol = NULL, addedToStartHeight = 0) {
   newX <- vector()
   newY <- vector()
   for (i in 1:(length(x) - 1)) {
-    if (xNumFills[i] != 0){
+    if (xNumFills[i] != 0) {
       newX <- append(newX, x[i])
       newY <- append(newY, y[i])
       newX <- append(newX, rep(NA, times = xNumFills[i]))
@@ -58,7 +57,7 @@ envelopegapfiller <- function(x, y, nCol = NULL, addedToStartHeight = 0) {
   
   #adding the numbers in the correct place for the X values --------------------
   for (i in 1:length(newX)) {
-    if (is.na(newX[i])){
+    if (is.na(newX[i])) {
       newX[i] = newX[i - 1] + 1
     }
   }
@@ -66,7 +65,7 @@ envelopegapfiller <- function(x, y, nCol = NULL, addedToStartHeight = 0) {
   #Matching the length of the nCol specified -----------------------------------
   
   if (!is.null(nCol)) {
-    if (newX[length(newX)] > nCol){
+    if (newX[length(newX)] > nCol) {
       outX <- newX[1:nCol] # just removes any data outside of the end length
       outY <- newY[1:nCol]
     }
@@ -76,8 +75,80 @@ envelopegapfiller <- function(x, y, nCol = NULL, addedToStartHeight = 0) {
       outY <- c(newY, rep(NA, length = length(xAdditions)))
     }
   }
+  else{
+    outX <- newX
+    outY <- newY
+  }
+  
+  # Start of adding the heights from the slope ---------------------------------
+  k <- 0
+  indicator = FALSE
+  for (i in 1:(length(outY) - sum(xNumFills))) {
+    
+    if (i == length(xNumFills)) {
+      k <- k + 1
+      print(c("endWithFilling", slopes[length(xNumFills)]))
+      print(outY[k])
+      intersept <- outY[k] - (outX[k]*slopes[length(xNumFills)])
+      print(intersept)
+      next
+    }
+    else if (i > length(xNumFills)) {
+      k <- k + 1
+      if (!indicator) {
+        outY[k] <- outX[k] * slopes[length(xNumFills)] + intersept
+        indicator <- TRUE
+      }else{
+        
+        print(c("testEnd", slopes[length(xNumFills)]))
+        print(outY[k])
+        outY[k] <- outY[k - 1]#outX[k] * slopes[length(xNumFills)] + intersept
+        print(intersept)
+      }
+    }
+    else if (xNumFills[i] == 0) {
+      k <- k + 1
+      print(c("noneElseIf", slopes[i]))
+      #print(c("none", slopes[i]))
+       print(outY[k])
+       intersept <- outY[k] - (outX[k] * slopes[i])
+       print(intersept)
+      next
+    }
+    else{
+      for (j in 1:(xNumFills[i] + 1 )) {
+         k <- k + 1
+        if (j == 1) {
+          print(c("noneForFilling", slopes[i])) 
+           print(outY[k])
+           intersept <- outY[k] - (outX[k] * slopes[i])
+           print(intersept)
+        }
+        else {
+        print(paste0("test", slopes[i],j - 1))
+           print(outY[k])
+           outY[k] <- outX[k]*slopes[i] + intersept
+           print(intersept)
+        }
+      }
+      # j <- 1
+      #   if (xNumFills[i] == 0) {
+      #     next
+      #     j <- j + 1
+      #   }
+    }
+  }
+  
   
   
 
   }
 ```
+
+
+```{r}
+par(mfrow = c(1,2))
+plot(x = c(0,1,5,7,8,10), y = c(1,1,2,3,2,2))
+plot(outX, outY)
+```
+
