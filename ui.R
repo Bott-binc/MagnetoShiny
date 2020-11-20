@@ -14,8 +14,8 @@ library(shinycssloaders)
 library(shinylogs)
 #library(bootstraplib) not aval for the new R vsn
 
-pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
-#pwd <- "~/Magneto/Digitizations/" #This is on corsair
+#pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
+pwd <- "~/Magneto/Digitizations/" #This is on corsair
 
 
 
@@ -87,27 +87,30 @@ shinyUI(fluidPage(
             fluidRow(column(12, br())), # just to add some space between things
 
             fluidRow(
-              column(3),
-              column(6,
+              column(12,
               hidden(
                 verbatimTextOutput("AdvancedInfo"),
-                verbatimTextOutput("TraceInfo")
+                verbatimTextOutput("TraceInfo"),
+                verbatimTextOutput("CutInfo")
                 )
-              ),
-              column(3)
-
-            ),
+              )),
 
             fluidRow(
 
               column(3,
                     hidden(
-                     actionButton("AdvancedHelpLines", "Lines Touch", class = "btn-info")
+                     actionButton("AdvancedHelpLines", "Lines Touch", class = "btn-info"),
+                     actionButton("AHCutsCancel", "Cancel", class = "btn-danger")
                     )
               ),
               column(3,
                      hidden(
-                       actionButton("AdvancedHelpEnvelopes", "Envelopes incorrect", class = "btn-info"),
+                       actionButton("AHCuts", "Re-Draw Image Trim Lines", class = "btn-info"),
+                       numericInput(inputId = "AHCutsTop",
+                                    label = "Please select height of top cut
+                                    between the writing and the first trace (start around 1200)",
+                                    value = 0),
+
                        radioButtons(inputId="envelopeSelection", label="What Envelope do you want to trace?",
                                     choices=c( "Top of Top Trace" = "TTopTrace" ,
                                               "Bottom of Top Trace" = "BTopTrace",
@@ -117,14 +120,20 @@ shinyUI(fluidPage(
               ),
               column(3,
                      hidden(
-                       actionButton("AHTopEnv", "Manually Redo Envelopes", class = "btn-info"),
+                       numericInput(inputId = "AHCutsBottom",
+                                    label = "Please select height of bottom cut
+                                    between the second trace and the timing lines (start around 600)",
+                                    value = 0),
+                       actionButton("AHEnv", "Manually Redo Envelopes", class = "btn-info"),
                        actionButton("cancelTrace", "Cancel Tracing", class = "btn-danger"),
                        actionButton("AHEnvPlot", "Plot to Check Trace", class = "btn-info")
+
                      )
               ),
               column(3,
                      hidden(
-                       actionButton("AHBottomEnv", "Trace Bottom Envelopes", class = "btn-info")
+                       actionButton("AHBottomEnv", "For Something Else", class = "btn-info"),
+                       actionButton("CutCheck", "Plot To Check Cuts", class = "btn-info")
                      )
               )
 

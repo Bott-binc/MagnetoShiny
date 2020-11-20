@@ -16,8 +16,8 @@ library(shinylogs)
 library(readr)
 plotClickX <- vector()
 
-pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
-#pwd <- "~/Magneto/Digitizations/" # this is on the corsair
+#pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
+pwd <- "~/Magneto/Digitizations/" # this is on the corsair
 load(paste0(pwd, "todo-200828.rds"))
 
 # Define server logic required to draw a histogram
@@ -56,6 +56,22 @@ shinyServer(function(input, output, session) {
 
     output$TraceInfo <- renderText({
         "Please click on the plot and create envelope line"
+    })
+
+
+    # for the cuts vector
+
+    output$CutInfo <- renderText({
+        "Make as close to possible to the two image lines without intersecting them (0 is bottom)"
+    })
+
+    Cuts <- reactiveValues(TopCut = 0, BottomCut = 0)
+
+    observeEvent(input$CutCheck,{
+        Cuts$TopCut <- as.numeric(input$AHCutsTop)
+    })
+    observeEvent(input$AHCutsBottom, {
+        Cuts$BottomCut <- as.numeric(input$AHCutsBottom)
     })
 
     # for the points/envelopes vector ------------------------------------------
@@ -139,6 +155,7 @@ shinyServer(function(input, output, session) {
         paste0("x = ", pointsBBottomEnv$clickx, ", y = ", pointsBBottomEnv$clicky, "\n")
     })
 
+    #think this will work for throwing to TISI
     envelopeDataTTop <- reactive({
         data.frame(x = pointsTTopEnv$clickx - 120, y = pointsTTopEnv$clicky)
     })
@@ -201,8 +218,11 @@ shinyServer(function(input, output, session) {
                  plot(magImage, xlim = c(120, magImageWidth))
                  input$AHEnvPlot
                  input$traceStartOver
+                 input$CutCheck
 
                  isolate({
+                     abline(h = Cuts$TopCut, col = "red", lwd = 2)
+                     abline(h = Cuts$BottomCut, col = "orange", lwd = 2)
                      lines(pointsTTopEnv$clickx, pointsTTopEnv$clicky, col = "green")
                      lines(pointsBTopEnv$clickx, pointsBTopEnv$clicky, col = "blue")
                      lines(pointsTBottomEnv$clickx, pointsTBottomEnv$clicky, col = "red")
@@ -246,8 +266,8 @@ shinyServer(function(input, output, session) {
     #needs improvent toggle
     observeEvent(input$VisFail, {
         toggle("AdvancedHelpLines")
-        toggle("AdvancedHelpEnvelopes")
-        toggle("AHTopEnv")
+        toggle("AHCuts")
+        toggle("AHEnv")
         toggle("AHBottomEnv")
         toggle("DNP")
         toggle("VisGood")
@@ -259,8 +279,8 @@ shinyServer(function(input, output, session) {
     #when user presses cancel
     observeEvent(input$Cancel, {
         toggle("AdvancedHelpLines")
-        toggle("AdvancedHelpEnvelopes")
-        toggle("AHTopEnv")
+        toggle("AHCuts")
+        toggle("AHEnv")
         toggle("AHBottomEnv")
         toggle("DNP")
         toggle("VisGood")
@@ -277,15 +297,15 @@ shinyServer(function(input, output, session) {
     })
 
     #when user decides to look at top envelope improvement
-    observeEvent(input$AHTopEnv, {
+    observeEvent(input$AHEnv, {
         toggle("traceStartOver")
         toggle("AHEnvPlot")
         toggle("envelopeSelection")
-        toggle("AHTopEnv")
+        toggle("AHEnv")
         toggle("Cancel")
         toggle("cancelTrace")
         toggle("AdvancedHelpLines")
-        toggle("AdvancedHelpEnvelopes")
+        toggle("AHCuts")
         toggle("AHBottomEnv")
         toggle("AdvancedInfo")
         toggle("TraceInfo")
@@ -297,14 +317,44 @@ shinyServer(function(input, output, session) {
         toggle("traceStartOver")
         toggle("AHEnvPlot")
         toggle("envelopeSelection")
-        toggle("AHTopEnv")
+        toggle("AHEnv")
         toggle("Cancel")
         toggle("cancelTrace")
         toggle("AdvancedHelpLines")
-        toggle("AdvancedHelpEnvelopes")
+        toggle("AHCuts")
         toggle("AHBottomEnv")
         toggle("AdvancedInfo")
         toggle("TraceInfo")
+    })
+
+    # for user to start finding the cuts
+    observeEvent(input$AHCuts, {
+        toggle("AHCutsTop")
+        toggle("AHCutsBottom")
+        toggle("AdvancedHelpLines")
+        toggle("AHEnv")
+        toggle("AHBottomEnv")
+        toggle("AHCutsCancel")
+        toggle("AHCuts")
+        toggle("AdvancedInfo")
+        toggle("Cancel")
+        toggle("CutCheck")
+        toggle("CutInfo")
+    })
+
+    #for user to cancel finding the cuts
+    observeEvent(input$AHCutsCancel, {
+        toggle("AHCutsTop")
+        toggle("AHCutsBottom")
+        toggle("AdvancedHelpLines")
+        toggle("AHEnv")
+        toggle("AHBottomEnv")
+        toggle("AHCutsCancel")
+        toggle("AHCuts")
+        toggle("AdvancedInfo")
+        toggle("Cancel")
+        toggle("CutCheck")
+        toggle("CutInfo")
     })
 
 })
