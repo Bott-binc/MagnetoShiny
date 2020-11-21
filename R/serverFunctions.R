@@ -1,7 +1,14 @@
 library(tools)
 
 
-envelopegapfiller <- function(x, y, nCol = NULL) {
+#' envelope gap filling for TISI
+#'
+#' @param x vector of x values
+#' @param y vector of y values
+#' @param nCol the length out that you want
+#'
+#' @return data.frame of x and y values
+.envelopegapfiller <- function(x, y, nCol = NULL) {
   if (x[1] != 0) { # ensure that we are at the correct starting height
     x <- c(0,x) # creates first point
     y <- c(y[1],y) # matches height of user selected first point

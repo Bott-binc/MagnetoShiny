@@ -29,19 +29,27 @@ shinyServer(function(input, output, session) {
 
     # if (isFALSE(input$DigitizationChecking)) {
         #getting image names for the dir selected
+
         imageNames <- reactive({dir(path = paste0(pwd, input$year, "/") ,pattern = ".tif.png")})
-        imageNameNoType <- reactive({str_split(imageNames()[input$imageNumber],
+        imageNameNoType <- reactive({
+            str_split(imageNames()[input$imageNumber],
                                                pattern = ".p")[[1]][1]})
         #getting image data for the dir selected
-        imageDatards <- reactive({dir(path = paste0(pwd, input$year, "/") ,
-                                      pattern = paste0(imageNameNoType(), "-Digitized.RDS"))})
+        #this does both the digitized and the fail to process in the dir
+        imageDatards <- reactive({c(dir(path = paste0(pwd, input$year, "/") ,
+                                      pattern = paste0(imageNameNoType(),
+                                                       "-Digitized.RDS")),
+                                    dir(path = paste0(pwd, input$year, "/") ,
+                                        pattern = paste0(imageNameNoType(),
+                                                         "-FailToProcess-Data.RDS")))
+                                    })
 
 
 
     #changes the imageNumber max for numeric input
     observeEvent(imageNames(), {
         max = length(imageNames())
-        updateNumericInput(session, "imageNumber", max = max, value = 2)
+        updateNumericInput(session, "imageNumber", max = max, value = 1)
     })
 
 
@@ -233,9 +241,9 @@ shinyServer(function(input, output, session) {
                  #Options for the plotting ---
 
 
-                 if ("topTrLine" %in% input$plotChoices) {
+                 if ("topTrLine" %in% input$plotChoices & !is.null(magTrace$TopTraceStartEnds$Start)) {
                      #For Top Trace
-                     lines(c(rep(0, 0.02*magImageWidth), # main line
+                     lines(c(rep(0, 0.02*magImageWidth ), # main line
                              rep(0, magTrace$TopTraceStartEnds$Start),
                              100 - 8 + magTrace$TopTraceMatrix), lwd = 1.5,col = "red")
                  }

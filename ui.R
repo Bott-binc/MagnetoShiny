@@ -161,7 +161,7 @@ shinyUI(fluidPage(
                        # slider for what image to look at
                        numericInput(inputId = "imageNumber",
                                     label = "Select the image number to look at",
-                                    value = 2,
+                                    value = 1,
                                     min = 1,
                                     max = 100), # Max updates to number of images in spec dir
 
