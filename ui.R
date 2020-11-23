@@ -91,7 +91,8 @@ shinyUI(fluidPage(
               hidden(
                 verbatimTextOutput("AdvancedInfo"),
                 verbatimTextOutput("TraceInfo"),
-                verbatimTextOutput("CutInfo")
+                verbatimTextOutput("CutInfo"),
+                verbatimTextOutput("StartEndInfo")
                 )
               )),
 
@@ -99,8 +100,9 @@ shinyUI(fluidPage(
 
               column(3,
                     hidden(
-                     actionButton("AdvancedHelpLines", "Lines Touch", class = "btn-info"),
-                     actionButton("AHCutsCancel", "Cancel", class = "btn-danger")
+                     actionButton("traceStartEnd", "Re-do start ends for lines", class = "btn-info"),
+                     actionButton("AHCutsCancel", "Cancel", class = "btn-danger"),
+                     actionButton("AHStartEndCancel", "Cancel - start end", class = "btn-danger")
                     )
               ),
               column(3,
@@ -109,6 +111,12 @@ shinyUI(fluidPage(
                        numericInput(inputId = "AHCutsTop",
                                     label = "Please select height of top cut
                                     between the writing and the first trace (start around 1200)",
+                                    value = 0),
+                       numericInput(inputId = "AHStartTop",
+                                    label = "Please select the starting point for the top line (usually around 200)",
+                                    value = 0),
+                       numericInput(inputId = "AHStartBottom",
+                                    label = "Please select the starting point for the second line from the top (usually around 200)",
                                     value = 0),
 
                        radioButtons(inputId="envelopeSelection", label="What Envelope do you want to trace?",
@@ -124,6 +132,12 @@ shinyUI(fluidPage(
                                     label = "Please select height of bottom cut
                                     between the second trace and the timing lines (start around 600)",
                                     value = 0),
+                       numericInput(inputId = "AHEndTop",
+                                    label = "Please select the ending point for the top line (usually around 6000)",
+                                    value = 0),
+                       numericInput(inputId = "AHEndBottom",
+                                    label = "Please select the ending point for the second line from the top (usually around 6000)",
+                                    value = 0),
                        actionButton("AHEnv", "Manually Redo Envelopes", class = "btn-info"),
                        actionButton("cancelTrace", "Cancel Tracing", class = "btn-danger"),
                        actionButton("AHEnvPlot", "Plot to Check Trace", class = "btn-info")
@@ -133,7 +147,8 @@ shinyUI(fluidPage(
               column(3,
                      hidden(
                        actionButton("AHBottomEnv", "For Something Else", class = "btn-info"),
-                       actionButton("CutCheck", "Plot To Check Cuts", class = "btn-info")
+                       actionButton("CutCheck", "Plot To Check Cuts", class = "btn-info"),
+                       actionButton("StartEndCheck", "plot to Check Start Ends", class = "btn-info")
                      )
               )
 
@@ -167,7 +182,9 @@ shinyUI(fluidPage(
 
                        # tableOutput("plotInfoX"),
                        verbatimTextOutput("plotInfoTTopEnv"),
-                       verbatimTextOutput("plotInfoBTopEnv")
+                       verbatimTextOutput("plotInfoBTopEnv"),
+                       verbatimTextOutput("plotInfoTBottomEnv"),
+                       verbatimTextOutput("plotInfoBBottomEnv")
 
                 ),
 
@@ -181,6 +198,15 @@ shinyUI(fluidPage(
                                                         "Top Trace Start Line" = "startLineTopTr",
                                                         "Bottom Trace Start Line" = "startLineBtmTr"),
                                             selected = c("topTrLine", "btmTrLine")),
+                       checkboxGroupInput(inputId = "reRunChoices",
+                                          label = "Please choose what you would like to re-run",
+                                          choices = c("Top of Top Envelope" = "TTopEnv",
+                                                      "Bottom of Top Envelope" = "BTopEnv",
+                                                      "Top of Bottom Envelope" = "TBottomEnv",
+                                                      "Bottom of Bottom Envelope" = "BBottomEnv",
+                                                      "Top Trace Start and Ends" = "TopStartEnds",
+                                                      "Bottom Trace Start and Ends" = "BottomStartEnds",
+                                                      "Top and Bottom Cuts" = "TBCuts")),
                        actionButton("reRun", "never press this button", class = "btn-info")
 
 

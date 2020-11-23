@@ -14,6 +14,7 @@ library(stringr)
 library(shinyjs)
 library(shinylogs)
 library(readr)
+library(magneto)
 plotClickX <- vector()
 
 #pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
@@ -31,7 +32,10 @@ shinyServer(function(input, output, session) {
         #getting image names for the dir selected
 
         imageNames <- reactive({dir(path = paste0(pwd, input$year, "/") ,pattern = ".tif.png")})
-        imageNameNoType <- reactive({
+        imageNameWithType <- reactive({
+            imageNames()[input$imageNumber]
+        })
+        imageNameNoType <- reactive({# no .png type on the end**
             str_split(imageNames()[input$imageNumber],
                                                pattern = ".p")[[1]][1]})
         #getting image data for the dir selected
@@ -66,12 +70,42 @@ shinyServer(function(input, output, session) {
         "Please click on the plot and create envelope line"
     })
 
+    # for the start end vector
+
+    output$StartEndInfo <- renderText({
+        "Make as close to possible to the start or end of lines respectivly,
+        do not include written numbers"
+    })
+
+    TopTrStartEnds <- reactiveValues(Start = NA, End = NA)
+    BottomTrStartEnds <- reactiveValues(Start = NA , End = NA)
+
+    observeEvent(input$AHStartTop,{
+        TopTrStartEnds$Start <- as.numeric(input$AHStartTop)
+    })
+    observeEvent(input$AHStartBottom, {
+        BottomTrStartEnds$Start <- as.numeric(input$AHStartBottom)
+    })
+    observeEvent(input$AHEndTop,{
+        TopTrStartEnds$End <- as.numeric(input$AHEndTop)
+    })
+    observeEvent(input$AHEndBottom, {
+        BottomTrStartEnds$End <- as.numeric(input$AHEndBottom)
+    })
+
+    # observeEvent(input$AhStartEndCancel, {
+    #     TopTrStartEnds <- reactiveValues(Start = NA, End = NA)
+    #     BottomTrStartEnds <- reactiveValues(Start = NA , End = NA)
+    # })
+
 
     # for the cuts vector
 
     output$CutInfo <- renderText({
-        "Make as close to possible to the two image lines without intersecting them (0 is bottom)"
+        "Make as close to possible to the two image lines without
+        intersecting them (0 is bottom)"
     })
+
 
     Cuts <- reactiveValues(TopCut = 0, BottomCut = 0)
 
@@ -94,33 +128,33 @@ shinyServer(function(input, output, session) {
         if (input$envelopeSelection == "TTopTrace"){
             isolate({ # lets the points to not be re-evaluated
                 pointsTTopEnv$clickx = c(pointsTTopEnv$clickx,
-                                         round(as.numeric(input$plot_click$x), digits = 3))
+                                         round(as.numeric(input$plot_click$x), digits = 0))
                 pointsTTopEnv$clicky = c(pointsTTopEnv$clicky,
-                                         round(as.numeric(input$plot_click$y), digits = 3))
+                                         round(as.numeric(input$plot_click$y), digits = 0))
             })
         }
         if (input$envelopeSelection == "BTopTrace"){
             isolate({ # lets the points to not be re-evaluated
                 pointsBTopEnv$clickx = c(pointsBTopEnv$clickx,
-                                         round(as.numeric(input$plot_click$x), digits = 3))
+                                         round(as.numeric(input$plot_click$x), digits = 0))
                 pointsBTopEnv$clicky = c(pointsBTopEnv$clicky,
-                                         round(as.numeric(input$plot_click$y), digits = 3))
+                                         round(as.numeric(input$plot_click$y), digits = 0))
             })
         }
         if (input$envelopeSelection == "TBottomTrace"){
             isolate({ # lets the points to not be re-evaluated
                 pointsTBottomEnv$clickx = c(pointsTBottomEnv$clickx,
-                                            round(as.numeric(input$plot_click$x), digits = 3))
+                                            round(as.numeric(input$plot_click$x), digits = 0))
                 pointsTBottomEnv$clicky = c(pointsTBottomEnv$clicky,
-                                            round(as.numeric(input$plot_click$y), digits = 3))
+                                            round(as.numeric(input$plot_click$y), digits = 0))
             })
         }
         if (input$envelopeSelection == "BBottomTrace"){
             isolate({ # lets the points to not be re-evaluated
                 pointsBBottomEnv$clickx = c(pointsBBottomEnv$clickx,
-                                            round(as.numeric(input$plot_click$x), digits = 3))
+                                            round(as.numeric(input$plot_click$x), digits = 0))
                 pointsBBottomEnv$clicky = c(pointsBBottomEnv$clicky,
-                                            round(as.numeric(input$plot_click$y), digits = 3))
+                                            round(as.numeric(input$plot_click$y), digits = 0))
             })
         }
     })
@@ -165,29 +199,167 @@ shinyServer(function(input, output, session) {
 
     #think this will work for throwing to TISI
     envelopeDataTTop <- reactive({
-        data.frame(x = pointsTTopEnv$clickx - 120, y = pointsTTopEnv$clicky)
+        newpointsTTopEnv <- pointsTTopEnv
+        # for (i in 1:length(newpointsTTopEnv$clickx)) {
+        #     if (newpointsTTopEnv$clickx[i] > 0){
+        #         newpointsTTopEnv$clickx[i] <- newpointsTTopEnv$clickx[i] - 120
+        #     }
+        # }
+        data.frame(x = newpointsTTopEnv$clickx, y = newpointsBTopEnv$clicky) # think this might be 240
     })
     envelopeDataBTop <- reactive({
-        data.frame(x = pointsBTopEnv$clickx - 120, y = pointsBTopEnv$clicky)
+        newpointsBTopEnv <- pointsBTopEnv
+        # for (i in 1:length(newpointsBTopEnv$clickx)) {
+        #     if (newpointsBTopEnv$clickx[i] > 0){
+        #         newpointsBTopEnv$clickx[i] <- newpointsBTopEnv$clickx[i] - 120
+        #     }
+        # }
+        data.frame(x = newpointsBTopEnv$clickx, y = newpointsBTopEnv$clicky)
     })
     envelopeDataTBottom <- reactive({
-        data.frame(x = pointsTBottomEnv$clickx - 120, y = pointsTBottomEnv$clicky)
+        newpointsTBottomEnv <- pointsTBottomEnv
+        # for (i in 1:length(newpointsTBottomEnv$clickx)) {
+        #     if (newpointsTBottomEnv$clickx[i] > 0){
+        #         newpointsTBottomEnv$clickx[i] <- newpointsTBottomEnv$clickx[i] - 120
+        #     }
+        # }
+        data.frame(x = newpointsTBottomEnv$clickx, y = newpointsTBottomEnv$clicky)
     })
     envelopeDataBBottom <- reactive({
-        data.frame(x = pointsBBottomEnv$clickx - 120, y = pointsBBottomEnv$clicky)
+        newpointsBBottomEnv <- pointsBBottomEnv
+        # for (i in 1:length(newpointsBBottomEnv$clickx)) {
+        #     if (newpointsBBottomEnv$clickx[i] > 0){
+        #         newpointsBBottomEnv$clickx[i] <- newpointsBBottomEnv$clickx[i] - 120
+        #     }
+        # }
+        data.frame(x = newpointsBBottomEnv$clickx, y = newpointsBBottomEnv$clicky)
     })
 
 
 # Writing csv for testing of the envelopes -------------------------------------
     observeEvent(
-        input$reRun, {                             # when button is clicked <---
-            #need to put TISI here now
-            # now <- Sys.time() %>%                      # clean up <-----------------
-            # str_replace_all("\\:", "-") %>%            # text for <-----------------
-            # str_replace(" ", "_")                      # Sys.time <-----------------
+        input$reRun, { # when button is clicked <---
+            browser()
 
-            filename <- paste0(as.character(imageNameNoType()),"Envelopes_{now}.csv")  # create filename <----------
-            write_csv(envelopeData(), file = paste0(pwd, filename))  # write to csv <-------------
+            #Top Envelopes -----------------------------------------------------
+            if ("TTopEnv" %in% input$reRunChoices){
+                if (is.na(envelopeDataTTop()$x[2])){ # user hasn't used this yet..
+                    imTTopEnv <- data.frame(x = NA, y = NA)
+                }
+                else{
+                    imTTopEnv <- envelopeDataTTop()
+                    for (i in 1:length(imTTopEnv$x)) {
+                        if (imTTopEnv$x[i] > 0){
+                            imTTopEnv$x[i] <- imTTopEnv$x[i] - 120
+                        }
+                    }
+                }
+            }
+            else {
+                imTTopEnv <- data.frame(x = NA, y = NA)
+            }
+            if ("BTopEnv" %in% input$reRunChoices){
+                if (is.na(envelopeDataBTop()$x[2])){ # user hasn't used this yet..
+                    imBTopEnv <- data.frame(x = NA, y = NA)
+                }
+                else{
+                    imBTopEnv <- envelopeDataBTop()
+                    for (i in 1:length(imBTopEnv$x)) {
+                        if (imBTopEnv$x[i] > 0){
+                            imBTopEnv$x[i] <- imBTopEnv$x[i] - 120
+                        }
+                    }
+                }
+            }
+            else{
+                imBTopEnv <- data.frame(x = NA, y = NA)
+            }
+
+            #TopEnvelopesStartEnds -----------------
+            if ("TopStartEnds" %in% input$reRunChoices){
+                if (is.na(TopTrStartEnds$Start) & is.na(TopTrStartEnds$End)){ # user hasn't used this yet..
+                    imTopStartEnd <- NA
+                }
+                else{
+                    imTopStartEnd <- c(TopTrStartEnds$Start - 120, TopTrStartEnds$End - 120)
+                }
+            }
+            else{
+                imTopStartEnd <- NA
+            }
+
+
+            #Bottom Envelopes --------------------------------------------------
+            if ("TBottomEnv" %in% input$reRunChoices){
+                if (is.na(envelopeDataTBottom()$x[2])){ # user hasn't used this yet..
+                    imTBottomEnv <- data.frame(x = NA, y = NA)
+                }
+                else{
+                    imTBottomEnv <- envelopeDataTBottom()
+                    for (i in 1:length(imTBottomEnv$x)) {
+                        if (imTBottomEnv$x[i] > 0){
+                            imTBottomEnv$x[i] <- imTBottomEnv$x[i] - 120
+                        }
+                    }
+                }
+            }
+            else{
+                imTBottomEnv <- data.frame(x = NA, y = NA)
+            }
+            if ("BBottomEnv" %in% input$reRunChoices){
+                if (is.na(envelopeDataBBottom()$x[2])){ # user hasn't used this yet..
+                    imBBottomEnv <- data.frame(x = NA, y = NA)
+                }
+                else{
+                    imBBottomEnv <- envelopeDataBBottom()
+                    for (i in 1:length(imBBottomEnv$x)) {
+                        if (imBBottomEnv$x[i] > 0){
+                            imBBottomEnv$x[i] <- imBBottomEnv$x[i] - 120
+                        }
+                    }
+                }
+            }
+            else{
+                imBBottomEnv <- data.frame(x = NA, y = NA)
+            }
+            # #BottomEnvelopesStartEnd -----------------
+            if ("BottomStartEnds" %in% input$reRunChoices){
+                if (is.na(BottomTrStartEnds$Start) & is.na(BottomTrStartEnds$End)){ # user hasn't used this yet..
+                    imBottomStartEnd <- NA
+                }
+                else{
+                    imBottomStartEnd <- c(BottomTrStartEnds$Start - 120, BottomTrStartEnds$End - 120)
+                }
+            }
+            else{
+                imBottomStartEnd <- NA
+            }
+
+            #TopBottomCut
+            if ("TBCuts" %in% input$reRunChoices){
+                if (Cuts$BottomCut == 0 & Cuts$TopCut == 0){
+                    imTBCuts = NA
+                }
+                else{
+                    imTBCuts <- c(Cuts$TopCut, Cuts$BottomCut)
+                }
+            }
+            else{
+                imTBCuts = NA
+            }
+
+
+
+
+            data <- TISI(imageName = imageNameNoType(), fileLoc = paste0(pwd, input$year, "/"),
+                 pathToWorkingDir = pwd, improvement = TRUE, HDVcheck = FALSE, plotPNG = TRUE,
+                 saveData = TRUE, improveTopBottomCuts = imTBCuts, improveTTopEnvelope = imTTopEnv,
+                 improveBTopEnvelope = imBTopEnv, improveTBottomEnvelope = imTBottomEnv,
+                 improveBBottomEnvelope = imBBottomEnv, improveTopEnvelopeStartEnd = imTopStartEnd,
+                 improveBottomEnvelopeStartEnd = imBottomStartEnd)
+
+
+
 
         }
     )
@@ -223,14 +395,19 @@ shinyServer(function(input, output, session) {
                                             input$year, "/",
                                             imageDatards()))
                  par(mar = c(0, 0, 0, 0))
-                 plot(magImage, xlim = c(120, magImageWidth))
+                 plot(magImage, xlim = c(121, magImageWidth)) #121 for trimming and to make sure never get negative numbers with TISI offset
                  input$AHEnvPlot
                  input$traceStartOver
                  input$CutCheck
+                 input$StartEndCheck
 
                  isolate({
                      abline(h = Cuts$TopCut, col = "red", lwd = 2)
                      abline(h = Cuts$BottomCut, col = "orange", lwd = 2)
+                     abline(v = TopTrStartEnds$Start, col = "green", lwd = 2)
+                     abline(v = TopTrStartEnds$End, col = "green", lwd = 2)
+                     abline(v= BottomTrStartEnds$Start, col = "blue", lwd = 2)
+                     abline(v = BottomTrStartEnds$End, col = "blue", lwd = 2)
                      lines(pointsTTopEnv$clickx, pointsTTopEnv$clicky, col = "green")
                      lines(pointsBTopEnv$clickx, pointsBTopEnv$clicky, col = "blue")
                      lines(pointsTBottomEnv$clickx, pointsTBottomEnv$clicky, col = "red")
@@ -273,7 +450,7 @@ shinyServer(function(input, output, session) {
 
     #needs improvent toggle
     observeEvent(input$VisFail, {
-        toggle("AdvancedHelpLines")
+        toggle("traceStartEnd")
         toggle("AHCuts")
         toggle("AHEnv")
         toggle("AHBottomEnv")
@@ -286,7 +463,7 @@ shinyServer(function(input, output, session) {
 
     #when user presses cancel
     observeEvent(input$Cancel, {
-        toggle("AdvancedHelpLines")
+        toggle("traceStartEnd")
         toggle("AHCuts")
         toggle("AHEnv")
         toggle("AHBottomEnv")
@@ -312,7 +489,7 @@ shinyServer(function(input, output, session) {
         toggle("AHEnv")
         toggle("Cancel")
         toggle("cancelTrace")
-        toggle("AdvancedHelpLines")
+        toggle("traceStartEnd")
         toggle("AHCuts")
         toggle("AHBottomEnv")
         toggle("AdvancedInfo")
@@ -328,7 +505,7 @@ shinyServer(function(input, output, session) {
         toggle("AHEnv")
         toggle("Cancel")
         toggle("cancelTrace")
-        toggle("AdvancedHelpLines")
+        toggle("traceStartEnd")
         toggle("AHCuts")
         toggle("AHBottomEnv")
         toggle("AdvancedInfo")
@@ -339,7 +516,7 @@ shinyServer(function(input, output, session) {
     observeEvent(input$AHCuts, {
         toggle("AHCutsTop")
         toggle("AHCutsBottom")
-        toggle("AdvancedHelpLines")
+        toggle("traceStartEnd")
         toggle("AHEnv")
         toggle("AHBottomEnv")
         toggle("AHCutsCancel")
@@ -354,7 +531,7 @@ shinyServer(function(input, output, session) {
     observeEvent(input$AHCutsCancel, {
         toggle("AHCutsTop")
         toggle("AHCutsBottom")
-        toggle("AdvancedHelpLines")
+        toggle("traceStartEnd")
         toggle("AHEnv")
         toggle("AHBottomEnv")
         toggle("AHCutsCancel")
@@ -363,6 +540,40 @@ shinyServer(function(input, output, session) {
         toggle("Cancel")
         toggle("CutCheck")
         toggle("CutInfo")
+    })
+
+    # for user to start finding the start ends
+    observeEvent(input$traceStartEnd, {
+        toggle("AHStartTop")
+        toggle("AHStartBottom")
+        toggle("AHEndTop")
+        toggle("AHEndBottom")
+        toggle("traceStartEnd")
+        toggle("AHEnv")
+        toggle("AHBottomEnv")
+        toggle("AHStartEndCancel")
+        toggle("AHCuts")
+        toggle("AdvancedInfo")
+        toggle("Cancel")
+        toggle("StartEndCheck")
+        toggle("StartEndInfo")
+    })
+
+    #for user to cancel finding the start ends
+    observeEvent(input$AHStartEndCancel, {
+        toggle("AHStartTop")
+        toggle("AHStartBottom")
+        toggle("AHEndTop")
+        toggle("AHEndBottom")
+        toggle("traceStartEnd")
+        toggle("AHEnv")
+        toggle("AHBottomEnv")
+        toggle("AHStartEndCancel")
+        toggle("AHCuts")
+        toggle("AdvancedInfo")
+        toggle("Cancel")
+        toggle("StartEndCheck")
+        toggle("StartEndInfo")
     })
 
 })
