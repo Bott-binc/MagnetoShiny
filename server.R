@@ -205,7 +205,7 @@ shinyServer(function(input, output, session) {
         #         newpointsTTopEnv$clickx[i] <- newpointsTTopEnv$clickx[i] - 120
         #     }
         # }
-        data.frame(x = newpointsTTopEnv$clickx, y = newpointsBTopEnv$clicky) # think this might be 240
+        data.frame(x = newpointsTTopEnv$clickx, y = newpointsTTopEnv$clicky) # think this might be 240
     })
     envelopeDataBTop <- reactive({
         newpointsBTopEnv <- pointsBTopEnv
@@ -239,7 +239,7 @@ shinyServer(function(input, output, session) {
 # Writing csv for testing of the envelopes -------------------------------------
     observeEvent(
         input$reRun, { # when button is clicked <---
-            browser()
+
 
             #Top Envelopes -----------------------------------------------------
             if ("TTopEnv" %in% input$reRunChoices){
@@ -347,6 +347,7 @@ shinyServer(function(input, output, session) {
             else{
                 imTBCuts = NA
             }
+            browser()
 
 
 
