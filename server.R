@@ -386,6 +386,7 @@ shinyServer(function(input, output, session) {
         magImageDim <- as.numeric(unlist(str_split(image_attributes(magImage)$value[8],
                                                    pattern = ",")))
         magImageWidth <- max(magImageDim)
+        magImageHeight <- min(magImageDim)
         #magImageHeight <- min(magImageDim) #just encase the image is non horizontal
         #cropped <- image_crop(magImage, "390x110+61+175") for digitized bad pixelation
         if (length(imageDatards()) == 0) { #there isnt a rds file(not digitized yet)
@@ -419,26 +420,45 @@ shinyServer(function(input, output, session) {
                  #Options for the plotting ---
 
 
-                 if ("topTrLine" %in% input$plotChoices & !is.null(magTrace$TopTraceStartEnds$Start)) {
+                 if ("topTrLine" %in% input$plotChoices & !is.null(magTrace$TopTraceStartEnds$Start)
+                     & !is.null(magTrace$TopTraceMatrix)) {
                      #For Top Trace
-                     lines(c(rep(0, 0.02*magImageWidth ), # main line
-                             rep(0, magTrace$TopTraceStartEnds$Start),
+                     lines(c(rep(NA, 0.02*magImageWidth ), # main line
+                             rep(NA, magTrace$TopTraceStartEnds$Start),
                              100 - 8 + magTrace$TopTraceMatrix), lwd = 1.5,col = "red")
                  }
-                 if ("startLineTopTr" %in% input$plotChoices) {
+                 if ("startLineTopTr" %in% input$plotChoices & !is.null(magTrace$TopTraceStartEnds$Start)) {
                      abline(v = 0.02*magImageWidth + magTrace$TopTraceStartEnds$Start,
                             col = "red", lwd = 3) # start line for top trace
                  }
+                 if ("endLineTopTr" %in% input$plotChoices & !is.null(magTrace$TopTraceStartEnds$End)) {
+                     abline(v = 0.02*magImageWidth + magTrace$TopTraceStartEnds$End,
+                            col = "red", lwd = 3) # start line for top trace
+                 }
                  #For Bottom Trace
-                 if ("btmTrLine" %in% input$plotChoices) {
-                     lines(c(rep(0, 0.02*magImageWidth), # main line
-                             rep(0, magTrace$BottomTraceStartEnds$Start),
+                 if ("btmTrLine" %in% input$plotChoices & !is.null(magTrace$BottomTraceStartEnds$Start)
+                     & !is.null(magTrace$BottomTraceMatrix)) {
+                     lines(c(rep(NA, 0.02*magImageWidth), # main line
+                             rep(NA, magTrace$BottomTraceStartEnds$Start),
                              100 - 8 + magTrace$BottomTraceMatrix), lwd = 1.5,col = "red")
                  }
-                 if ("startLineBtmTr" %in% input$plotChoices) {
+                 if ("startLineBtmTr" %in% input$plotChoices &
+                     !is.null(magTrace$BottomTraceStartEnds$Start)) {
                      abline(v = 0.02*magImageWidth + magTrace$BottomTraceStartEnds$Start,
                             col = "red", lwd = 3) # start line for bottom trace
                      #abline(h = magTrace$Cuts$BottomCut, col = "red")
+                 }
+                 if ("endLineBtmTr" %in% input$plotChoices &
+                     !is.null(magTrace$BottomTraceStartEnds$End)) {
+                     abline(v = 0.02*magImageWidth + magTrace$BottomTraceStartEnds$End,
+                            col = "red", lwd = 3) # start line for bottom trace
+                     #abline(h = magTrace$Cuts$BottomCut, col = "red")
+                 }
+                 if ("topBtmCuts" %in% input$plotChoices & !is.null(magTrace$Cuts$TopCut)
+                     & !is.null(magTrace$Cuts$BottomCut)) {
+                     abline(h = abs(magTrace$Cuts$TopCut - magImageHeight) - 225, col = "orange")
+                     abline(h = abs( magTrace$Cuts$BottomCut - magImageHeight) -225,
+                            col = "orange")
                  }
 
 
