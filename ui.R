@@ -12,6 +12,7 @@ library(shinythemes)
 library(shinyjs)
 library(shinycssloaders)
 library(shinylogs)
+library(shinybusy)
 #library(bootstraplib) not aval for the new R vsn
 
 #pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
@@ -30,6 +31,14 @@ pwd <- "~/Magneto/Digitizations/" #This is on corsair
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
   useShinyjs(),
+  add_busy_spinner(
+    spin = "atom",
+    timeout = 100,
+    color = "#00FF00",
+    #position = "top-right",
+  ),
+
+
 
             #app title
             headerPanel(title = "Magneto Digitization Checker"),
@@ -58,7 +67,7 @@ shinyUI(fluidPage(
 
                        #output : plot of the requested image
                        plotOutput(outputId = "magPlot",
-                                   click = "plot_click") #%>% withSpinner(color = "#0dc5c1") #image Output
+                                   click = "plot_click") #image Output%>%
 
                 )),
             fluidRow(

@@ -236,9 +236,11 @@ shinyServer(function(input, output, session) {
     })
 
 
-# Writing csv for testing of the envelopes -------------------------------------
+# Creating new Digitization for an image -------------------------------------
     observeEvent(
         input$reRun, { # when button is clicked <---
+            Sys.sleep(5)
+
 
 
             #Top Envelopes -----------------------------------------------------
@@ -347,7 +349,7 @@ shinyServer(function(input, output, session) {
             else{
                 imTBCuts = NA
             }
-            browser()
+
 
 
 
@@ -360,7 +362,7 @@ shinyServer(function(input, output, session) {
                  improveBottomEnvelopeStartEnd = imBottomStartEnd)
 
 
-
+            browser()
 
         }
     )
