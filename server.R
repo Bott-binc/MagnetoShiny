@@ -237,6 +237,7 @@ shinyServer(function(input, output, session) {
 
 
 # Creating new Digitization for an image -------------------------------------
+    DigitizednewRDS <- reactiveValues(newImageDataLoc = NA)
     observeEvent(
         input$reRun, { # when button is clicked <---
             Sys.sleep(5)
@@ -353,16 +354,17 @@ shinyServer(function(input, output, session) {
 
 
 
-
-            data <- TISI(imageName = imageNameNoType(), fileLoc = paste0(pwd, input$year, "/"),
+            browser()
+            DigitizednewRDS$newImageDataLoc <-  TISI(imageName = imageNameNoType(), fileLoc = paste0(pwd, input$year, "/"),
                  pathToWorkingDir = pwd, improvement = TRUE, HDVcheck = FALSE, plotPNG = TRUE,
                  saveData = TRUE, improveTopBottomCuts = imTBCuts, improveTTopEnvelope = imTTopEnv,
                  improveBTopEnvelope = imBTopEnv, improveTBottomEnvelope = imTBottomEnv,
                  improveBBottomEnvelope = imBBottomEnv, improveTopEnvelopeStartEnd = imTopStartEnd,
-                 improveBottomEnvelopeStartEnd = imBottomStartEnd)
+                 improveBottomEnvelopeStartEnd = imBottomStartEnd)$newImageLoc
 
 
             browser()
+
 
         }
     )
@@ -395,9 +397,16 @@ shinyServer(function(input, output, session) {
             plot(image_read(paste0(pwd, "/", "noRDSErrorMessage.png")))
         }
          else{
+             #if (is.null(data())){
                  magTrace <- readRDS(paste0(pwd,
                                             input$year, "/",
                                             imageDatards()))
+            # observeEvent(data(),{
+                 browser()
+             if(!is.na(DigitizednewRDS$newImageDataLoc)){
+                 magTrace <- readRDS(as.character(DigitizednewRDS$newImageDataLoc))
+             }
+             #})
                  par(mar = c(0, 0, 0, 0))
                  plot(magImage, xlim = c(121, magImageWidth)) #121 for trimming and to make sure never get negative numbers with TISI offset
                  input$AHEnvPlot
@@ -466,6 +475,7 @@ shinyServer(function(input, output, session) {
 
          }
     })
+
 
 
 
