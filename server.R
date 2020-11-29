@@ -238,6 +238,7 @@ shinyServer(function(input, output, session) {
 
 # Creating new Digitization for an image -------------------------------------
     DigitizednewRDS <- reactiveValues(newImageDataLoc = NA)
+
     observeEvent(
         input$reRun, { # when button is clicked <---
             Sys.sleep(5)
