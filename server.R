@@ -355,7 +355,7 @@ shinyServer(function(input, output, session) {
 
 
 
-            browser()
+
             DigitizednewRDS$newImageDataLoc <-  TISI(imageName = imageNameNoType(), fileLoc = paste0(pwd, input$year, "/"),
                  pathToWorkingDir = pwd, improvement = TRUE, HDVcheck = FALSE, plotPNG = TRUE,
                  saveData = TRUE, improveTopBottomCuts = imTBCuts, improveTTopEnvelope = imTTopEnv,
@@ -364,7 +364,7 @@ shinyServer(function(input, output, session) {
                  improveBottomEnvelopeStartEnd = imBottomStartEnd)$newImageLoc
 
 
-            browser()
+
 
 
         }
@@ -403,7 +403,7 @@ shinyServer(function(input, output, session) {
                                             input$year, "/",
                                             imageDatards()))
             # observeEvent(data(),{
-                 browser()
+
              if(!is.na(DigitizednewRDS$newImageDataLoc)){
                  magTrace <- readRDS(as.character(DigitizednewRDS$newImageDataLoc))
              }
@@ -470,7 +470,7 @@ shinyServer(function(input, output, session) {
                      & !is.null(magTrace$Cuts$BottomCut)) {
                      abline(h = abs(magTrace$Cuts$TopCut - magImageHeight) - 225, col = "orange")
                      abline(h = abs( magTrace$Cuts$BottomCut - magImageHeight) -225,
-                            col = "orange")
+                            col = "red")
                  }
 
 

@@ -30,19 +30,20 @@ pwd <- "~/Magneto/Digitizations/" #This is on corsair
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
-  useShinyjs(),
   add_busy_spinner(
-    spin = "atom",
+    spin = "orbit",
     timeout = 100,
-    color = "#00FF00",
-    #position = "top-right",
+    color = "#1D18CA", #"#00FF00", #1D18CA
+    position = "top-right",
+    margins = c(350, 400)
   ),
 
+  useShinyjs(),
 
 
             #app title
             headerPanel(title = "Magneto Digitization Checker"),
-            theme = shinytheme("darkly"),
+            theme = shinytheme("readable"),
             # bs_theme_new(),
             # bs_theme_base_colors(bg = "#444", fg = "#e4e4e4"),
             # bs_theme_accent_colors(primary = "#e39777", secondary = "#fdce93"),
@@ -56,6 +57,7 @@ shinyUI(fluidPage(
 
 
                 column(12,
+
 
                        #output of formatted text for the image Name
                        h3(textOutput("oneImageName")),
@@ -73,7 +75,7 @@ shinyUI(fluidPage(
             fluidRow(
               column(4,
                      #hidden(
-                     actionButton("VisGood", "Looks Good", class = "btn-success")
+                     #actionButton("VisGood", "Looks Good", class = "btn-success")
                      #)
                     ),
               column(4,
@@ -88,7 +90,7 @@ shinyUI(fluidPage(
               ),
               column(4,
                      #hidden(
-                     actionButton("DNP", "Digitization Not Possible", class = "btn-danger")
+                     #actionButton("DNP", "Digitization Not Possible", class = "btn-danger")
                      #)
               )
             ),
@@ -110,8 +112,8 @@ shinyUI(fluidPage(
               column(3,
                     hidden(
                      actionButton("traceStartEnd", "Re-do start ends for lines", class = "btn-info"),
-                     actionButton("AHCutsCancel", "Cancel", class = "btn-danger"),
-                     actionButton("AHStartEndCancel", "Cancel - start end", class = "btn-danger")
+                     actionButton("AHCutsCancel", "Go Back To Main Page", class = "btn-info"),
+                     actionButton("AHStartEndCancel", "Go Back To Main Page", class = "btn-info")
                     )
               ),
               column(3,
@@ -148,14 +150,14 @@ shinyUI(fluidPage(
                                     label = "Please select the ending point for the second line from the top (usually around 6000)",
                                     value = 0),
                        actionButton("AHEnv", "Manually Redo Envelopes", class = "btn-info"),
-                       actionButton("cancelTrace", "Cancel Tracing", class = "btn-danger"),
+                       actionButton("cancelTrace", "Go Back To Main Page", class = "btn-info"),
                        actionButton("AHEnvPlot", "Plot to Check Trace", class = "btn-info")
 
                      )
               ),
               column(3,
                      hidden(
-                       actionButton("AHBottomEnv", "For Something Else", class = "btn-info"),
+                       #actionButton("AHBottomEnv", "For Something Else", class = "btn-info"), if needed in the future
                        actionButton("CutCheck", "Plot To Check Cuts", class = "btn-info"),
                        actionButton("StartEndCheck", "plot to Check Start Ends", class = "btn-info")
                      )
