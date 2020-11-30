@@ -52,26 +52,36 @@ shinyUI(fluidPage(
             ),
 
             fluidRow(
-
-
-
-
                 column(12,
 
 
                        #output of formatted text for the image Name
-                       h3(textOutput("oneImageName")),
+                       h3(textOutput("oneImageName"))
+                )),
+
+              fluidRow(
+                column(10,
+                       verbatimTextOutput("ErrorInfo"),
 
                        checkboxInput(inputId = "DigitizationChecking",
                                      label = "Would you like to check digitizations?",
                                      value = FALSE
                                     ),
+                ),
+                column(2,
+                       hidden(actionButton("errorOk",
+                                    label = "OK",
+                                    class = "btn-success")
+                              )
+                ),
+                column(12,
 
                        #output : plot of the requested image
                        plotOutput(outputId = "magPlot",
                                    click = "plot_click") #image Output%>%
+                )
 
-                )),
+                ),
             fluidRow(
               column(4,
                      #hidden(

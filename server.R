@@ -238,6 +238,7 @@ shinyServer(function(input, output, session) {
 
 # Creating new Digitization for an image -------------------------------------
     DigitizednewRDS <- reactiveValues(newImageDataLoc = NA)
+    #flagError <- reactiveVal()
 
     observeEvent(
         input$reRun, { # when button is clicked <---
@@ -355,16 +356,26 @@ shinyServer(function(input, output, session) {
 
 
 
-
-            DigitizednewRDS$newImageDataLoc <-  TISI(imageName = imageNameNoType(), fileLoc = paste0(pwd, input$year, "/"),
+            DigitizednewRDS$newImageDataLoc <-  tryCatch(TISI(imageName = imageNameNoType(), fileLoc = paste0(pwd, input$year, "/"),
                  pathToWorkingDir = pwd, improvement = TRUE, HDVcheck = FALSE, plotPNG = TRUE,
                  saveData = TRUE, improveTopBottomCuts = imTBCuts, improveTTopEnvelope = imTTopEnv,
                  improveBTopEnvelope = imBTopEnv, improveTBottomEnvelope = imTBottomEnv,
                  improveBBottomEnvelope = imBBottomEnv, improveTopEnvelopeStartEnd = imTopStartEnd,
-                 improveBottomEnvelopeStartEnd = imBottomStartEnd)$newImageLoc
+                 improveBottomEnvelopeStartEnd = imBottomStartEnd))
 
+            if(strsplit(DigitizednewRDS$newImageDataLoc, split = " ")[[1]][1] == "Error"&
+               strsplit(DigitizednewRDS$newImageDataLoc, split = " ")[[1]][12] == "doesn't") {
+                output$ErrorInfo <- renderText({
 
+                    as.character("Error, The .tiff file for this image is not in this directory")
 
+                })
+                toggle("errorOk")
+                DigitizednewRDS$newImageDataLoc <- NA
+            }
+            else{
+                DigitizednewRDS$newImagedataLoc <-  DigitizednewRDS$newImagedataLoc$newImageLoc
+            }
 
 
         }
@@ -608,6 +619,13 @@ shinyServer(function(input, output, session) {
         toggle("Cancel")
         toggle("StartEndCheck")
         toggle("StartEndInfo")
+    })
+
+
+
+    observeEvent(input$errorOk, {
+        toggle("errorOk")
+        toggle("ErrorInfo")
     })
 
 })
