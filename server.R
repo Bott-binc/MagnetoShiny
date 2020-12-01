@@ -362,6 +362,8 @@ shinyServer(function(input, output, session) {
                  improveBTopEnvelope = imBTopEnv, improveTBottomEnvelope = imTBottomEnv,
                  improveBBottomEnvelope = imBBottomEnv, improveTopEnvelopeStartEnd = imTopStartEnd,
                  improveBottomEnvelopeStartEnd = imBottomStartEnd))
+            DigitizednewRDS$newImageDataLoc  <-  DigitizednewRDS$newImageDataLoc$newImageLoc
+
 
             if(strsplit(DigitizednewRDS$newImageDataLoc, split = " ")[[1]][1] == "Error"&
                strsplit(DigitizednewRDS$newImageDataLoc, split = " ")[[1]][12] == "doesn't") {
@@ -374,7 +376,7 @@ shinyServer(function(input, output, session) {
                 DigitizednewRDS$newImageDataLoc <- NA
             }
             else{
-                DigitizednewRDS$newImagedataLoc <-  DigitizednewRDS$newImagedataLoc$newImageLoc
+                DigitizednewRDS$newImageDataLoc <-  DigitizednewRDS$newImageDataLoc
             }
 
 
