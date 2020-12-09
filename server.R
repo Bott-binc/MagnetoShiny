@@ -369,7 +369,8 @@ shinyServer(function(input, output, session) {
                strsplit(DigitizednewRDS$newImageDataLoc, split = " ")[[1]][12] == "doesn't") {
                 output$ErrorInfo <- renderText({
 
-                    as.character("Error, The .tiff file for this image is not in this directory")
+                    as.character("Error, The .tiff version of this image is not in this years directory
+                                 Digitization Not Possible")
 
                 })
                 toggle("errorOk")

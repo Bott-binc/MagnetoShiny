@@ -19,6 +19,25 @@ library(shinybusy)
 pwd <- "~/Magneto/Digitizations/" #This is on corsair
 
 
+### Functions ------------------------------------------------------------------
+
+lsDir <- function(pwd){
+  allDir <- list.dirs(pwd, full.names = FALSE)
+  retVec <- vector()
+  for (i in allDir) {
+    splitting <- strsplit(i, "")
+    firstChar <- splitting[[1]][1]
+    numericTry <- suppressWarnings(as.numeric(firstChar))
+
+    if(!is.na(numericTry)){
+      retVec <- c(retVec, i) # if not NA, then must be a year directory
+    }
+
+  }
+  return(retVec) #returning all the year directories
+}
+
+
 
   #when app stop,
   # navigate to the directory containing the logs
@@ -191,8 +210,8 @@ shinyUI(fluidPage(
                 column(6,
                        selectInput(inputId = "year",
                                    label = "Select year to be checked",
-                                   choices = list.dirs(pwd, full.names = FALSE),
-                                   selected = list.dirs(pwd, full.names = FALSE)[2]),
+                                   choices = lsDir(pwd),#list.dirs(pwd, full.names = FALSE),
+                                   selected = lsDir(pwd)[1]),
 
                        # slider for what image to look at
                        numericInput(inputId = "imageNumber",
