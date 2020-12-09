@@ -33,7 +33,8 @@ shinyServer(function(input, output, session) {
         output$allImage <- renderUI(
             selectInput(inputId = "imageNameChoice",
                         label = "Select the image you want to look at",
-                        choices = dir(path = paste0(pwd, input$year, "/"), pattern = ".tif.png"))
+                        choices = dir(path = paste0(pwd, input$year, "/"), pattern = ".tif.png"),
+                        selected = dir(path = paste0(pwd, input$year, "/"), pattern = ".tif.png")[1])
         )
 
         #imageNames <- reactive({dir(path = paste0(pwd, input$year, "/") ,pattern = ".tif.png")})
@@ -52,6 +53,26 @@ shinyServer(function(input, output, session) {
                                         pattern = paste0(imageNameNoType(),
                                                          "-FailToProcess-Data.RDS")))
                                     })
+
+        output$imageDatardsSelect <- renderUI({
+            selectInput(inputId = "rdsSelection",
+                        label = "Please select the rds digitization that you would like to view",
+                        choices = c(dir(path = paste0(pwd, input$year, "/") ,
+                                        pattern = paste0(imageNameNoType(),
+                                                         "-Digitized.RDS")),
+                                    dir(path = paste0(pwd, input$year, "/") ,
+                                        pattern = paste0(imageNameNoType(),
+                                                         "-FailToProcess-Data.RDS")),
+                                    dir(path = paste0(pwd, imageNameNoType(), "/"),
+                                        pattern = ".RDS")), #no fail to process because dont want to see those
+                        selected = c(dir(path = paste0(pwd, input$year, "/") ,
+                                         pattern = paste0(imageNameNoType(),
+                                                          "-Digitized.RDS")),
+                                     dir(path = paste0(pwd, input$year, "/") ,
+                                         pattern = paste0(imageNameNoType(),
+                                                          "-FailToProcess-Data.RDS")))[1]
+                        )
+                        })
 
 
 
@@ -405,6 +426,9 @@ shinyServer(function(input, output, session) {
         #             contentType = "image/png"))
 
         #this is working
+        input$year
+        input$imageNameChoice
+        input$rdsSelection
         magImage <- image_rotate(image_read(paste0(pwd, input$year, "/",
                                       input$imageNameChoice#imageNames()[input$imageNumber]
                                       )), 270)
@@ -414,18 +438,47 @@ shinyServer(function(input, output, session) {
         magImageHeight <- min(magImageDim)
         #magImageHeight <- min(magImageDim) #just encase the image is non horizontal
         #cropped <- image_crop(magImage, "390x110+61+175") for digitized bad pixelation
-        if (length(imageDatards()) == 0) { #there isnt a rds file(not digitized yet)
+        #browser()
+        if (input$rdsSelection == ""){#length(imageDatards()) == 0) { #there isnt a rds file(not digitized yet)
             plot(image_read(paste0(pwd, "/", "noRDSErrorMessage.png")))
         }
          else{
-             #if (is.null(data())){
+             if(!is.na(DigitizednewRDS$newImageDataLoc)){
+                 magTrace <- readRDS(as.character(DigitizednewRDS$newImageDataLoc))
+                 # observeEvent(imageNames(), {
+                 #     max = length(imageNames())
+                 updateSelectInput(session, inputId = "rdsSelection",
+                                   selected = as.character(DigitizednewRDS$newImageDataLoc))
+                 # })
+             }
+             else if(grepl("-FailToProcess-Data", input$rdsSelection, fixed = TRUE)) {
+                 magTrace <- readRDS(paste0(pwd, input$year, "/", input$rdsSelection))
+             }
+             else if(grepl("Data", input$rdsSelection, fixed = TRUE)) {
+                 magTrace <- readRDS(paste0(pwd, imageNameNoType(), "/", input$rdsSelection))
+             }
+             else {
              magTrace <- readRDS(paste0(pwd,
                                             input$year, "/",
-                                            imageDatards()))
+                                            input$rdsSelection))#imageDatards()))
+             }
             # observeEvent(data(),{
 
              if(!is.na(DigitizednewRDS$newImageDataLoc)){
                  magTrace <- readRDS(as.character(DigitizednewRDS$newImageDataLoc))
+                 # observeEvent(imageNames(), {
+                 #     max = length(imageNames())
+                 updateSelectInput(session, "rdsSelection",
+                                   # choices = c(dir(path = paste0(pwd, input$year, "/") ,
+                                   #                 pattern = paste0(imageNameNoType(),
+                                   #                                  "-Digitized.RDS")),
+                                   #             dir(path = paste0(pwd, input$year, "/") ,
+                                   #                 pattern = paste0(imageNameNoType(),
+                                   #                                  "-FailToProcess-Data.RDS")),
+                                   #             dir(path = paste0(pwd, imageNameNoType(), "/"),
+                                   #                 pattern = ".RDS")),
+                                   selected = as.character(DigitizednewRDS$newImageDataLoc))
+                 # })
              }
              #})
                  par(mar = c(0, 0, 0, 0))

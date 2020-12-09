@@ -85,13 +85,17 @@ shinyUI(fluidPage(
                        checkboxInput(inputId = "DigitizationChecking",
                                      label = "Would you like to check digitizations?",
                                      value = FALSE
-                                    ),
+                                    )
+
                 ),
                 column(2,
                        hidden(actionButton("errorOk",
                                     label = "OK",
                                     class = "btn-success")
                               )
+                ),
+                column(12,
+                       uiOutput(outputId = "imageDatardsSelect")
                 ),
                 column(12,
 
