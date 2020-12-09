@@ -96,8 +96,8 @@ shinyUI(fluidPage(
                 column(12,
 
                        #output : plot of the requested image
-                       plotOutput(outputId = "magPlot",
-                                   click = "plot_click") #image Output%>%
+                       suppressWarnings(plotOutput(outputId = "magPlot",
+                                   click = "plot_click")) #image Output%>%
                 )
 
                 ),
@@ -213,12 +213,21 @@ shinyUI(fluidPage(
                                    choices = lsDir(pwd),#list.dirs(pwd, full.names = FALSE),
                                    selected = lsDir(pwd)[1]),
 
+                       # selectInput(inputId = "imageNameChoices",
+                       #             label = "Select the image you want to look at",
+                       #             choices = output$allImage) ,
+                       uiOutput(outputId = "allImage"),
+
+#lsDir(pwd),#list.dirs(pwd, full.names = FALSE),
+                                   #selected = lsDir(pwd)[1]),
+
+
                        # slider for what image to look at
-                       numericInput(inputId = "imageNumber",
-                                    label = "Select the image number to look at",
-                                    value = 1,
-                                    min = 1,
-                                    max = 100), # Max updates to number of images in spec dir
+                       # numericInput(inputId = "imageNumber",
+                       #              label = "Select the image number to look at",
+                       #              value = 1,
+                       #              min = 1,
+                       #              max = 100), # Max updates to number of images in spec dir
 
                        # tableOutput("plotInfoX"),
                        verbatimTextOutput("plotInfoTTopEnv"),

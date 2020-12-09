@@ -30,13 +30,18 @@ shinyServer(function(input, output, session) {
 
     # if (isFALSE(input$DigitizationChecking)) {
         #getting image names for the dir selected
+        output$allImage <- renderUI(
+            selectInput(inputId = "imageNameChoice",
+                        label = "Select the image you want to look at",
+                        choices = dir(path = paste0(pwd, input$year, "/"), pattern = ".tif.png"))
+        )
 
-        imageNames <- reactive({dir(path = paste0(pwd, input$year, "/") ,pattern = ".tif.png")})
-        imageNameWithType <- reactive({
-            imageNames()[input$imageNumber]
-        })
+        #imageNames <- reactive({dir(path = paste0(pwd, input$year, "/") ,pattern = ".tif.png")})
+        # imageNameWithType <- reactive({ not being used
+        #     imageNames()[input$imageNumber]
+        # })
         imageNameNoType <- reactive({# no .png type on the end**
-            str_split(imageNames()[input$imageNumber],
+            str_split(input$imageNameChoice,#imageNames()[input$imageNumber],
                                                pattern = ".p")[[1]][1]})
         #getting image data for the dir selected
         #this does both the digitized and the fail to process in the dir
@@ -50,17 +55,17 @@ shinyServer(function(input, output, session) {
 
 
 
-    #changes the imageNumber max for numeric input
-    observeEvent(imageNames(), {
-        max = length(imageNames())
-        updateNumericInput(session, "imageNumber", max = max, value = 1)
-    })
+    # #changes the imageNumber max for numeric input
+    # observeEvent(imageNames(), {
+    #     max = length(imageNames())
+    #     updateNumericInput(session, "imageNumber", max = max, value = 1)
+    # })
 
 
-    # renders the imageNames for printing in ui
-    output$ImageNames <- renderPrint({
-        imageNames()
-    })
+    # renders the imageNames for printing in ui not being used
+    # output$ImageNames <- renderPrint({
+    #     imageNames()
+    # })
 
     output$AdvancedInfo <- renderText({
         "Please Select where the problem lies"
@@ -386,7 +391,7 @@ shinyServer(function(input, output, session) {
 
     # renders image name for the plot title ------------------------------------
 
-    output$oneImageName <- renderText({as.character(imageNameNoType())})
+    output$oneImageName <- renderText({input$imageNameChoice})#as.character(imageNameNoType())})
 
 
 
@@ -394,14 +399,15 @@ shinyServer(function(input, output, session) {
 
 
 
-    output$magPlot <- renderPlot({
+    output$magPlot <-  renderPlot({
         # return(list(src = paste0(pwd, input$year, "/",
         #                          imageNames()[input$imageNumber]),
         #             contentType = "image/png"))
 
         #this is working
         magImage <- image_rotate(image_read(paste0(pwd, input$year, "/",
-                                      imageNames()[input$imageNumber])), 270)
+                                      input$imageNameChoice#imageNames()[input$imageNumber]
+                                      )), 270)
         magImageDim <- as.numeric(unlist(str_split(image_attributes(magImage)$value[8],
                                                    pattern = ",")))
         magImageWidth <- max(magImageDim)
@@ -413,7 +419,7 @@ shinyServer(function(input, output, session) {
         }
          else{
              #if (is.null(data())){
-                 magTrace <- readRDS(paste0(pwd,
+             magTrace <- readRDS(paste0(pwd,
                                             input$year, "/",
                                             imageDatards()))
             # observeEvent(data(),{
@@ -423,7 +429,7 @@ shinyServer(function(input, output, session) {
              }
              #})
                  par(mar = c(0, 0, 0, 0))
-                 plot(magImage, xlim = c(121, magImageWidth)) #121 for trimming and to make sure never get negative numbers with TISI offset
+                 plot(magImage, xlim = c(121, magImageWidth))#121 for trimming and to make sure never get negative numbers with TISI offset
                  input$AHEnvPlot
                  input$traceStartOver
                  input$CutCheck
