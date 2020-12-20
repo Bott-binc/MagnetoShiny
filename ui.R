@@ -10,7 +10,7 @@ library(png)
 library(shiny)
 library(shinythemes)
 library(shinyjs)
-library(shinycssloaders)
+#library(shinycssloaders)
 library(shinylogs)
 library(shinybusy)
 #library(bootstraplib) not aval for the new R vsn
@@ -234,10 +234,10 @@ shinyUI(fluidPage(
                        #              max = 100), # Max updates to number of images in spec dir
 
                        # tableOutput("plotInfoX"),
-                       verbatimTextOutput("plotInfoTTopEnv"),
-                       verbatimTextOutput("plotInfoBTopEnv"),
-                       verbatimTextOutput("plotInfoTBottomEnv"),
-                       verbatimTextOutput("plotInfoBBottomEnv")
+                       #verbatimTextOutput("plotInfoTTopEnv"),
+                       #verbatimTextOutput("plotInfoBTopEnv"),
+                       #verbatimTextOutput("plotInfoTBottomEnv"),
+                       #verbatimTextOutput("plotInfoBBottomEnv")
 
                 ),
 
@@ -263,7 +263,7 @@ shinyUI(fluidPage(
                                                       "Top Trace Start and Ends" = "TopStartEnds",
                                                       "Bottom Trace Start and Ends" = "BottomStartEnds",
                                                       "Top and Bottom Cuts" = "TBCuts")),
-                       actionButton("reRun", "never press this button", class = "btn-info")
+                       actionButton("reRun", "Re-Digitize Image!", class = "btn-info")
 
 
                        #)

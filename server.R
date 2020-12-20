@@ -19,7 +19,7 @@ plotClickX <- vector()
 
 #pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
 pwd <- "~/Magneto/Digitizations/" # this is on the corsair
-load(paste0(pwd, "todo-200828.rds"))
+#load(paste0(pwd, "todo-200828.rds"))
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
@@ -431,7 +431,6 @@ shinyServer(function(input, output, session) {
         #             contentType = "image/png"))
 
         #this is working
-
 
         magImage <- image_rotate(image_read(paste0(pwd, year(), "/",
                                       input$imageNameChoice #imageNames()[input$imageNumber]
