@@ -385,7 +385,7 @@ shinyServer(function(input, output, session) {
             }
 
 
-
+            browser()
 
             DigitizednewRDS$newImageDataLoc <-  tryCatch(TISI(imageName = imageNameNoType(), fileLoc = paste0(pwd, input$year, "/"),
                  pathToWorkingDir = pwd, improvement = TRUE, HDVcheck = FALSE, plotPNG = TRUE,
@@ -393,9 +393,9 @@ shinyServer(function(input, output, session) {
                  improveBTopEnvelope = imBTopEnv, improveTBottomEnvelope = imTBottomEnv,
                  improveBBottomEnvelope = imBBottomEnv, improveTopEnvelopeStartEnd = imTopStartEnd,
                  improveBottomEnvelopeStartEnd = imBottomStartEnd))
-            DigitizednewRDS$newImageDataLoc  <-  DigitizednewRDS$newImageDataLoc$newImageLoc
-
-
+            if(!length(DigitizednewRDS$newImageDataLoc) <=1) {
+             DigitizednewRDS$newImageDataLoc  <-  DigitizednewRDS$newImageDataLoc$newImageLoc
+            }
             if(strsplit(DigitizednewRDS$newImageDataLoc, split = " ")[[1]][1] == "Error"&
                strsplit(DigitizednewRDS$newImageDataLoc, split = " ")[[1]][12] == "doesn't") {
                 output$ErrorInfo <- renderText({
@@ -407,9 +407,9 @@ shinyServer(function(input, output, session) {
                 toggle("errorOk")
                 DigitizednewRDS$newImageDataLoc <- NA
             }
-            else{
-                DigitizednewRDS$newImageDataLoc <-  DigitizednewRDS$newImageDataLoc
-            }
+            # else{
+            #     DigitizednewRDS$newImageDataLoc <-  DigitizednewRDS$newImageDataLoc
+            # }
 
 
         }
@@ -442,8 +442,10 @@ shinyServer(function(input, output, session) {
         #magImageHeight <- min(magImageDim) #just encase the image is non horizontal
         #cropped <- image_crop(magImage, "390x110+61+175") for digitized bad pixelation
         #browser()
-        if (input$rdsSelection == ""){#length(imageDatards()) == 0) { #there isnt a rds file(not digitized yet)
-            plot(image_read(paste0(pwd, "/", "noRDSErrorMessage.png")))
+        if (input$rdsSelection == ""){ # alows the user to digitize an image that hasn't been digitized before
+            #plot(image_read(paste0(pwd, "/", "noRDSErrorMessage.png")))
+            par(mar = c(0, 0, 0, 0))
+            plot(magImage, xlim = c(121, magImageWidth))
         }
          else{
              if(!is.na(DigitizednewRDS$newImageDataLoc)){
