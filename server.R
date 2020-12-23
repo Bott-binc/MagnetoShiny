@@ -15,7 +15,7 @@ library(shinyjs)
 library(shinylogs)
 library(readr)
 library(magneto)
-plotClickX <- vector()
+
 
 #pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
 pwd <- "~/Magneto/Digitizations/" # this is on the corsair
@@ -28,18 +28,21 @@ shinyServer(function(input, output, session) {
     #     storage_mode = store_rds(path = paste0(pwd, "logs"))
     # )
 
-    year <- reactive({
-        input$year
-    })
+
 
     # if (isFALSE(input$DigitizationChecking)) {
         #getting image names for the dir selected
+
         output$allImage <- renderUI(
             selectInput(inputId = "imageNameChoice",
                         label = "Select the image you want to look at",
                         choices = dir(path = paste0(pwd, year(), "/"), pattern = ".tif.png"),
                         selected = dir(path = paste0(pwd, year(), "/"), pattern = ".tif.png")[1])
         )
+
+        year <- reactive({
+            input$year
+        })
 
 
         #imageNames <- reactive({dir(path = paste0(pwd, input$year, "/") ,pattern = ".tif.png")})
@@ -426,12 +429,11 @@ shinyServer(function(input, output, session) {
 
 
     output$magPlot <-  renderPlot({
-        # return(list(src = paste0(pwd, input$year, "/",
-        #                          imageNames()[input$imageNumber]),
-        #             contentType = "image/png"))
 
-        #this is working
-
+       if(input$imageNameChoice == ""){
+           plot(image_read(paste0(pwd, "/", "nopngInDirErrorMessage.png")))
+       }
+        else{
         magImage <- image_rotate(image_read(paste0(pwd, year(), "/",
                                       input$imageNameChoice #imageNames()[input$imageNumber]
                                       )), 270)
@@ -571,6 +573,7 @@ shinyServer(function(input, output, session) {
 
 
          }
+        }
     })
 
 
