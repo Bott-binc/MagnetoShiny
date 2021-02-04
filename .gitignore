@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .Rproj.user
 .Rhistory
 .RData
@@ -9,3 +10,15 @@
 .Rbuildignore
 *.Rout
 Storage
+=======
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.Rproj
+*.txt
+*.csv
+*.RDS
+.Rbuildignore
+*.Rout
+>>>>>>> 10f434b4e45437f8c9144dd2b2b064aafe108b8d

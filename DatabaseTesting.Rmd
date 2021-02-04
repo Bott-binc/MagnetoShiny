@@ -1,0 +1,29 @@
+---
+title: "DatabaseTesting"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(rlist)
+library(pipeR)
+library(shinylogs)# are the packages needed
+```
+```{r}
+pwd  <- "~/Documents/Magnetograms2020/Digitizations/" # this is temporary corsair
+pwd <- "~/Magnetograms2020/Digitizations/" # this is botts-book
+
+logList <- list.files(path = paste0(pwd, "logs/"))
+
+for (i in 1){#:length(logList)) {
+  logi <- readRDS(paste0(pwd, "logs/", logList[i]))
+  logInputs <- list.sort(logi$inputs, timestamp)
+  #logOutputs <- list.sort(logi$outputs, timestamp)
+  id <- logi$session$sessionid
+  dailyLogList <- data.frame(Inputs = unlist(logInputs), ID = rep(id, length(logInputs)))#, Outputs =  unlist(logOutputs)) 
+}
+
+```
+
