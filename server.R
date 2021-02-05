@@ -388,7 +388,6 @@ shinyServer(function(input, output, session) {
             }
 
 
-            browser()
 
             DigitizednewRDS$newImageDataLoc <-  tryCatch(TISI(imageName = imageNameNoType(), fileLoc = paste0(pwd, input$year, "/"),
                  pathToWorkingDir = pwd, improvement = TRUE, HDVcheck = FALSE, plotPNG = TRUE,
@@ -443,7 +442,6 @@ shinyServer(function(input, output, session) {
         magImageHeight <- min(magImageDim)
         #magImageHeight <- min(magImageDim) #just encase the image is non horizontal
         #cropped <- image_crop(magImage, "390x110+61+175") for digitized bad pixelation
-        #browser()
         if (input$rdsSelection == ""){ # alows the user to digitize an image that hasn't been digitized before
             #plot(image_read(paste0(pwd, "/", "noRDSErrorMessage.png")))
             par(mar = c(0, 0, 0, 0))
