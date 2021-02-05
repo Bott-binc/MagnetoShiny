@@ -388,7 +388,7 @@ shinyServer(function(input, output, session) {
 
 
 
-            DigitizednewRDS$newImageDataLoc <-  tryCatch(TISI(imageName = imageNameNoType(), fileLoc = paste0(pwd, input$year, "/"),
+            DigitizednewRDS$newImageDataLoc <-  tryCatch(magneto::TISI(imageName = imageNameNoType(), fileLoc = paste0(pwd, input$year, "/"),
                  pathToWorkingDir = pwd, improvement = TRUE, HDVcheck = FALSE, plotPNG = TRUE,
                  saveData = TRUE, improveTopBottomCuts = imTBCuts, improveTTopEnvelope = imTTopEnv,
                  improveBTopEnvelope = imBTopEnv, improveTBottomEnvelope = imTBottomEnv,
