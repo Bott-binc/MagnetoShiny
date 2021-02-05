@@ -18,8 +18,7 @@ library(magneto)
 
 
 #pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
-pwd <- "~/Magneto/Digitizations/" # this is on the corsair
-#load(paste0(pwd, "todo-200828.rds"))
+pwd <- "Storage/"
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {

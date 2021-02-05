@@ -16,7 +16,7 @@ library(shinybusy)
 #library(bootstraplib) not aval for the new R vsn
 
 #pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
-pwd <- "~/Magneto/Digitizations/" #This is on corsair
+pwd <- "Storage/"
 
 
 ### Functions ------------------------------------------------------------------
