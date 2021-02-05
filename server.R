@@ -17,8 +17,8 @@ library(readr)
 library(magneto)
 
 
-#pwd <- "~/Magnetograms2020/Digitizations/" # This is on botts-book
-pwd <- "Storage/"
+#pwd <- "~/Magneto/Digitizations/" # This is on botts-pc
+pwd <- "Storage/" #for server
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
@@ -275,7 +275,7 @@ shinyServer(function(input, output, session) {
 
     observeEvent(
         input$reRun, { # when button is clicked <---
-            Sys.sleep(5)
+            #Sys.sleep(5)
 
 
 
