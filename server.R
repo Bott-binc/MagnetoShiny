@@ -18,7 +18,7 @@ library(magneto)
 
 
 #pwd <- "~/Magneto/Digitizations/" # This is on botts-pc
-pwd <- "/Storage" #for server
+pwd <- "Storage/" #for server
 #pwd <- "/srv/shiny-server/magneto/Storage/" #for server
 
 # Define server logic required to draw a histogram

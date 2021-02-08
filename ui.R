@@ -16,7 +16,7 @@ library(shinybusy)
 #library(bootstraplib) not aval for the new R vsn
 
 #pwd <- "~/Magneto/Digitizations/" # This is on botts-pc
-pwd <- "/Storage" #for server
+pwd <- "/Storage/" #for server
 #pwd <- "/srv/shiny-server/magneto/Storage/" #for server
 
 
