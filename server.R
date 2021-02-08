@@ -439,7 +439,7 @@ shinyServer(function(input, output, session) {
 
         if (image_info(magImage)$width < image_info(magImage)$height){ #flipping image if vertical
             magImage <- image_rotate(image_read(paste0(pwd, year(), "/",
-                                                       input$imageNameChoice)), 180)
+                                                       input$imageNameChoice)), 0)
         }
 
 
