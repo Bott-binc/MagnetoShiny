@@ -435,6 +435,14 @@ shinyServer(function(input, output, session) {
         magImage <- image_rotate(image_read(paste0(pwd, year(), "/",
                                       input$imageNameChoice #imageNames()[input$imageNumber]
                                       )), 270)
+
+
+        if (image_info(magImage)$width < image_info(magImage)$height){ #flipping image if vertical
+            magImage <- image_rotate(image_read(paste0(pwd, year(), "/",
+                                                       input$imageNameChoice)), 180)
+        }
+
+
         magImageDim <- as.numeric(unlist(str_split(image_attributes(magImage)$value[8],
                                                    pattern = ",")))
         magImageWidth <- max(magImageDim)
